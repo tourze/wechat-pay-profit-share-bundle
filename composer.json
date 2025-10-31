@@ -1,0 +1,56 @@
+{
+  "name": "tourze/wechat-pay-profit-share-bundle",
+  "description": "微信支付分账",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "require": {
+    "doctrine/collections": "^2.3",
+    "doctrine/dbal": "^4.0",
+    "doctrine/doctrine-bundle": "^2.13",
+    "doctrine/orm": "^3.0",
+    "doctrine/persistence": "^4.1",
+    "monolog/monolog": "^3.1",
+    "psr/http-message": "^1.1 || ^2.0",
+    "psr/log": "^3|^2|^1",
+    "symfony/config": "^7.3",
+    "symfony/console": "^7.3",
+    "symfony/dependency-injection": "^7.3",
+    "symfony/doctrine-bridge": "^7.3",
+    "symfony/framework-bundle": "^7.3",
+    "symfony/http-kernel": "^7.3",
+    "symfony/serializer": "^7.3",
+    "symfony/yaml": "^7.3",
+    "tourze/bundle-dependency": "1.*",
+    "tourze/doctrine-snowflake-bundle": "0.1.*",
+    "tourze/doctrine-timestamp-bundle": "0.0.*",
+    "tourze/doctrine-user-bundle": "0.0.*",
+    "tourze/enum-extra": "0.1.*",
+    "tourze/symfony-dependency-service-loader": "1.*",
+    "yiisoft/json": "^1.0"
+  },
+  "require-dev": {
+    "doctrine/data-fixtures": "^2.0",
+    "doctrine/doctrine-fixtures-bundle": "^4.0",
+    "fakerphp/faker": "^1.23",
+    "guzzlehttp/psr7": "^2.6",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^11.5",
+    "symfony/phpunit-bridge": "^7.3",
+    "tourze/phpunit-doctrine-entity": "0.0.*",
+    "tourze/phpunit-enum": "0.0.*",
+    "tourze/phpunit-symfony-kernel-test": "0.0.*",
+    "tourze/phpunit-symfony-unit-test": "0.0.*",
+    "tourze/phpunit-symfony-web-test": "0.0.*",
+    "tourze/symfony-testing-framework": "0.0.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tourze\\WechatPayProfitShareBundle\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tourze\\WechatPayProfitShareBundle\\Tests\\": "tests"
+    }
+  }
+}

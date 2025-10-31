@@ -1,0 +1,10 @@
+services:
+    # 开发环境服务配置
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # 开发环境数据填充服务
+    Tourze\WechatPayProfitShareBundle\DataFixtures\:
+        resource: '../DataFixtures/*'
+        tags: ['doctrine.fixture.orm']

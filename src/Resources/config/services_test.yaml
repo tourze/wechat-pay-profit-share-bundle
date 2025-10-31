@@ -1,0 +1,17 @@
+services:
+    # 测试环境服务配置
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # 测试环境的数据填充服务
+    Tourze\WechatPayProfitShareBundle\DataFixtures\:
+        resource: '../../DataFixtures/*'
+        tags: ['doctrine.fixture.orm']
+
+    # 测试环境专用的日志服务
+    Tourze\WechatPayProfitShareBundle\Logger\TestLogger:
+        arguments:
+            - '@logger'
+        tags:
+            - { name: monolog.logger, channel: 'wechat_profit_share_test' }
