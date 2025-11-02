@@ -6,8 +6,8 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Psr\Log\LoggerInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareNotificationService;
 use WeChatPay\Crypto\AesGcm;
@@ -15,6 +15,9 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareNotificationService::class)]
 class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
@@ -22,6 +25,7 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
     protected function onSetUp(): void
     {
     }
+
     public function testHandleNotification(): void
     {
         // 创建Mock依赖
@@ -34,7 +38,8 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
 
         $builderFactory->expects($this->once())
             ->method('getPlatformPublicKey')
-            ->willReturn($keys['public']);
+            ->willReturn($keys['public'])
+        ;
 
         // 将Mock依赖注入到容器中
         self::getContainer()->set(ProfitShareOperationLogRepository::class, $operationRepository);
@@ -86,11 +91,12 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
         $signatureNonce = 'signature-nonce';
         $message = $timestamp . "\n" . $signatureNonce . "\n" . $body . "\n";
         $privateKey = $keys['private'];
-        if ($privateKey === false) {
+        if (false === $privateKey) {
             throw new \RuntimeException('Private key is empty');
         }
         /** @var \OpenSSLAsymmetricKey|\OpenSSLCertificate|string $privateKey */
         openssl_sign($message, $signatureBinary, $privateKey, OPENSSL_ALGO_SHA256);
+        /** @var string $signatureBinary */
         $signature = base64_encode($signatureBinary);
 
         $headers = [
@@ -117,12 +123,12 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);
-        if ($resource === false) {
+        if (false === $resource) {
             throw new \RuntimeException('Failed to generate key pair');
         }
 
         $details = openssl_pkey_get_details($resource);
-        if ($details === false) {
+        if (false === $details) {
             throw new \RuntimeException('Failed to get key details');
         }
         /** @var array<string, mixed> $details */

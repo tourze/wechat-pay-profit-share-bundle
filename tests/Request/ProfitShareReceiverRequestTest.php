@@ -8,6 +8,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverRequest;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareReceiverRequest::class)]
 class ProfitShareReceiverRequestTest extends TestCase
 {
@@ -164,7 +167,7 @@ class ProfitShareReceiverRequestTest extends TestCase
             );
 
             $payload = $request->toPayload();
-            $this->assertSame($type, $payload['type'], "Failed for type: $type");
+            $this->assertSame($type, $payload['type'], "Failed for type: {$type}");
         }
     }
 }

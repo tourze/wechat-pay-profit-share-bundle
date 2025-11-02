@@ -38,7 +38,7 @@ class ProfitShareOperationLogger
         ?string $errorCode,
         ?string $errorMessage,
         array|string|null $request,
-        array|string|null $response
+        array|string|null $response,
     ): void {
         $log = new ProfitShareOperationLog();
         $log->setMerchant($merchant);
@@ -60,7 +60,7 @@ class ProfitShareOperationLogger
      */
     private function encodePayload(array|string|null $payload): ?string
     {
-        if ($payload === null) {
+        if (null === $payload) {
             return null;
         }
 

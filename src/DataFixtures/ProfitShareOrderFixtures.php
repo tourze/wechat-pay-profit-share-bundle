@@ -54,22 +54,22 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
                     'type' => 'MERCHANT_ID',
                     'account' => '1900000109',
                     'amount' => 100,
-                    'description' => '分给商户'
-                ]
-            ]
+                    'description' => '分给商户',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $orderProcessing->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
             'transaction_id' => '4200000452202401158754321234',
             'order_id' => '3008450740201411110007820472',
             'out_order_no' => 'P202401150001',
-            'state' => 'PROCESSING'
+            'state' => 'PROCESSING',
         ], JSON_THROW_ON_ERROR));
         $orderProcessing->setMetadata([
             'total_amount' => 10000,
             'receivers_count' => 1,
             'request_time' => '2024-01-15 10:30:00',
-            'auto_unfreeze' => false
+            'auto_unfreeze' => false,
         ]);
         $manager->persist($orderProcessing);
         $this->addReference(self::ORDER_PROCESSING_REFERENCE, $orderProcessing);
@@ -96,15 +96,15 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
                     'type' => 'MERCHANT_ID',
                     'account' => '1900000109',
                     'amount' => 500,
-                    'description' => '分给商户'
+                    'description' => '分给商户',
                 ],
                 [
                     'type' => 'PERSONAL_OPENID',
                     'account' => 'oxRHG5p6J9nW1z2y3x4w5v6u7t8',
                     'amount' => 200,
-                    'description' => '分给个人'
-                ]
-            ]
+                    'description' => '分给个人',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $orderFinished->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -119,7 +119,7 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
                     'amount' => 500,
                     'description' => '分给商户',
                     'result' => 'SUCCESS',
-                    'detail_id' => '3600002024011400990023456789'
+                    'detail_id' => '3600002024011400990023456789',
                 ],
                 [
                     'type' => 'PERSONAL_OPENID',
@@ -127,10 +127,10 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
                     'amount' => 200,
                     'description' => '分给个人',
                     'result' => 'SUCCESS',
-                    'detail_id' => '3600002024011400990023456790'
-                ]
+                    'detail_id' => '3600002024011400990023456790',
+                ],
             ],
-            'unfreeze_unsplit_amount' => 4300
+            'unfreeze_unsplit_amount' => 4300,
         ], JSON_THROW_ON_ERROR));
         $orderFinished->setMetadata([
             'total_amount' => 10000,
@@ -139,7 +139,7 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
             'receivers_count' => 2,
             'success_count' => 2,
             'failed_count' => 0,
-            'processing_duration' => 30
+            'processing_duration' => 30,
         ]);
         $manager->persist($orderFinished);
         $this->addReference(self::ORDER_FINISHED_REFERENCE, $orderFinished);
@@ -165,23 +165,23 @@ class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
                     'type' => 'MERCHANT_ID',
                     'account' => '1900000109',
                     'amount' => 300,
-                    'description' => '分给商户'
-                ]
-            ]
+                    'description' => '分给商户',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $orderClosed->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
             'transaction_id' => '4200000452202401139876543210',
             'order_id' => '3008450740201411110007820470',
             'out_order_no' => 'P202401130001',
-            'state' => 'CLOSED'
+            'state' => 'CLOSED',
         ], JSON_THROW_ON_ERROR));
         $orderClosed->setMetadata([
             'total_amount' => 8000,
             'shared_amount' => 300,
             'receivers_count' => 1,
             'close_reason' => 'USER_REFUND',
-            'processing_duration' => 135
+            'processing_duration' => 135,
         ]);
         $manager->persist($orderClosed);
         $this->addReference(self::ORDER_CLOSED_REFERENCE, $orderClosed);

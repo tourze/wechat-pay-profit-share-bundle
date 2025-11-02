@@ -12,6 +12,9 @@ use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOperationLog;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOperationType;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareOperationLog::class)]
 class ProfitShareOperationLogTest extends AbstractEntityTestCase
 {
@@ -29,7 +32,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testEntityInitialization(): void
     {
-                $this->assertInstanceOf(ProfitShareOperationLog::class, $this->profitShareOperationLog);
+        $this->assertInstanceOf(ProfitShareOperationLog::class, $this->profitShareOperationLog);
         $this->assertNull($this->profitShareOperationLog->getId());
         $this->assertNull($this->profitShareOperationLog->getMerchant());
         $this->assertNull($this->profitShareOperationLog->getSubMchId());
@@ -43,7 +46,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testMerchantGetterSetter(): void
     {
-                $merchant = $this->createMock(Merchant::class);
+        $merchant = $this->createMock(Merchant::class);
 
         $this->assertNull($this->profitShareOperationLog->getMerchant());
 
@@ -57,7 +60,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
     #[DataProvider('subMchIdProvider')]
     public function testSubMchIdGetterSetter(?string $subMchId): void
     {
-                $this->profitShareOperationLog->setSubMchId($subMchId);
+        $this->profitShareOperationLog->setSubMchId($subMchId);
         $this->assertEquals($subMchId, $this->profitShareOperationLog->getSubMchId());
     }
 
@@ -77,7 +80,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testTypeGetterSetter(): void
     {
-                foreach (ProfitShareOperationType::cases() as $type) {
+        foreach (ProfitShareOperationType::cases() as $type) {
             $this->profitShareOperationLog->setType($type);
             $this->assertSame($type, $this->profitShareOperationLog->getType());
         }
@@ -86,7 +89,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
     #[DataProvider('successProvider')]
     public function testSuccessGetterSetter(bool $success): void
     {
-                $this->profitShareOperationLog->setSuccess($success);
+        $this->profitShareOperationLog->setSuccess($success);
         $this->assertEquals($success, $this->profitShareOperationLog->isSuccess());
         $this->assertEquals($success, $this->profitShareOperationLog->isSuccess());
     }
@@ -172,7 +175,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
     #[DataProvider('metadataProvider')]
     public function testMetadataGetterSetter(?array $metadata): void
     {
-                $this->profitShareOperationLog->setMetadata($metadata);
+        $this->profitShareOperationLog->setMetadata($metadata);
         $this->assertEquals($metadata, $this->profitShareOperationLog->getMetadata());
     }
 
@@ -193,7 +196,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testTimestampGetters(): void
     {
-                // 测试初始状态
+        // 测试初始状态
         $this->assertNull($this->profitShareOperationLog->getCreatedAt());
         $this->assertNull($this->profitShareOperationLog->getUpdatedAt());
 
@@ -204,7 +207,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-                // 测试成功情况
+        // 测试成功情况
         $this->profitShareOperationLog->setType(ProfitShareOperationType::REQUEST_ORDER);
         $expected = 'ProfitShareOperationLog(request_order-success-ok)';
         $this->assertEquals($expected, (string) $this->profitShareOperationLog);
@@ -218,13 +221,13 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testStringableImplementation(): void
     {
-                $this->assertInstanceOf(\Stringable::class, $this->profitShareOperationLog);
+        $this->assertInstanceOf(\Stringable::class, $this->profitShareOperationLog);
         $this->assertIsString((string) $this->profitShareOperationLog);
     }
 
     public function testSuccessfulOperationLog(): void
     {
-                // 模拟成功的操作日志
+        // 模拟成功的操作日志
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareOperationLog->setMerchant($merchant);
@@ -245,7 +248,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testFailedOperationLog(): void
     {
-                // 模拟失败的操作日志
+        // 模拟失败的操作日志
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareOperationLog->setMerchant($merchant);
@@ -268,7 +271,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testAllOperationTypes(): void
     {
-                $testCases = [
+        $testCases = [
             [ProfitShareOperationType::REQUEST_ORDER, '请求分账'],
             [ProfitShareOperationType::QUERY_ORDER, '查询分账'],
             [ProfitShareOperationType::UNFREEZE_ORDER, '解冻剩余资金'],
@@ -292,7 +295,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 
     public function testComplexOperationWorkflow(): void
     {
-                // 模拟一个完整的分账操作工作流程
+        // 模拟一个完整的分账操作工作流程
 
         // 1. 添加接收方（成功）
         $addReceiverLog = new ProfitShareOperationLog();
@@ -337,7 +340,7 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
      */
     private function assertIsNullable(mixed $value, string $expectedType): void
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertTrue(true);
         } else {
             $this->assertInstanceOf($expectedType, $value);

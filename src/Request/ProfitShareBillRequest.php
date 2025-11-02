@@ -9,13 +9,13 @@ use DateTimeInterface;
 class ProfitShareBillRequest
 {
     public function __construct(
-        private readonly DateTimeInterface $billDate,
+        private readonly \DateTimeInterface $billDate,
         private readonly ?string $subMchId = null,
         private readonly ?string $tarType = null,
     ) {
     }
 
-    public function getBillDate(): DateTimeInterface
+    public function getBillDate(): \DateTimeInterface
     {
         return $this->billDate;
     }

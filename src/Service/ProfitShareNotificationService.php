@@ -118,7 +118,7 @@ class ProfitShareNotificationService
         ?string $errorCode,
         ?string $errorMessage,
         array $request,
-        array $response
+        array $response,
     ): void {
         $log = new ProfitShareOperationLog();
         $log->setMerchant($merchant);

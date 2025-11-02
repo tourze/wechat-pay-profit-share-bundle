@@ -4,27 +4,39 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Tests\Command;
 
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
 use Tourze\WechatPayProfitShareBundle\Command\ProfitShareUnfreezeCommand;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOrderRepository;
+use Tourze\WechatPayProfitShareBundle\Request\ProfitShareUnfreezeRequest;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareService;
 use WechatPayBundle\Entity\Merchant;
 
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareUnfreezeCommand::class)]
 class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 {
     private CommandTester $commandTester;
+
+    /** @phpstan-var MockObject&ProfitShareOrderRepository */
     private ProfitShareOrderRepository $orderRepository;
+
+    /** @phpstan-var MockObject&ProfitShareService */
     private ProfitShareService $profitShareService;
+
+    /** @phpstan-var MockObject&LoggerInterface */
     private LoggerInterface $logger;
 
     public function testExecuteWithNoOrders(): void
@@ -45,10 +57,9 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
-
         $this->profitShareService->expects($this->never())
-            ->method('unfreezeRemainingAmount');
+            ->method('unfreezeRemainingAmount')
+        ;
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -58,56 +69,76 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
+    /**
+     * @return MockObject&ProfitShareOrder
+     */
     private function createMockOrder(): ProfitShareOrder
     {
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order = $this->createMock(ProfitShareOrder::class);
-        $order->method('getId')->willReturn('1');
         $order->method('isUnfreezeUnsplit')->willReturn(false);
         $order->method('getSubMchId')->willReturn('1234567890');
         $order->method('getTransactionId')->willReturn('TX1234567890');
         $order->method('getOutOrderNo')->willReturn('ORDER123');
+
         return $order;
     }
 
+    /**
+     * @return MockObject&ProfitShareOrder
+     */
     private function createMockAlreadyUnfrozenOrder(): ProfitShareOrder
     {
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order = $this->createMock(ProfitShareOrder::class);
-        $order->method('getId')->willReturn('1');
         $order->method('isUnfreezeUnsplit')->willReturn(true); // 已解冻
         $order->method('getSubMchId')->willReturn('1234567890');
         $order->method('getTransactionId')->willReturn('TX1234567890');
         $order->method('getOutOrderNo')->willReturn('ORDER123');
+
         return $order;
     }
 
+    /**
+     * @return MockObject&ProfitShareOrder
+     */
     private function createMockOrderWithMerchant(): ProfitShareOrder
     {
         $merchant = $this->createMockMerchant();
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order = $this->createMock(ProfitShareOrder::class);
-        $order->method('getId')->willReturn('1');
         $order->method('isUnfreezeUnsplit')->willReturn(false);
         $order->method('getMerchant')->willReturn($merchant);
         $order->method('getSubMchId')->willReturn('1234567890');
         $order->method('getTransactionId')->willReturn('TX1234567890');
         $order->method('getOutOrderNo')->willReturn('ORDER123');
+
         return $order;
     }
 
+    /**
+     * @return MockObject&ProfitShareOrder
+     */
     private function createMockUnfrozenOrder(): ProfitShareOrder
     {
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order = $this->createMock(ProfitShareOrder::class);
-        $order->method('getId')->willReturn('1');
         $order->method('isUnfreezeUnsplit')->willReturn(true); // 已解冻
         $order->method('getSubMchId')->willReturn('1234567890');
         $order->method('getTransactionId')->willReturn('TX1234567890');
         $order->method('getOutOrderNo')->willReturn('ORDER123');
+
         return $order;
     }
 
+    /**
+     * @return MockObject&Merchant
+     */
     private function createMockMerchant(): Merchant
     {
+        /** @phpstan-var MockObject&Merchant $merchant */
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('getId')->willReturn('1');
+
         return $merchant;
     }
 
@@ -124,10 +155,12 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
      */
     private function setupOrderRepositoryWithCustomTime(array $orders, int $hours): void
     {
-        $query = $this->createMock(\Doctrine\ORM\Query::class);
+        /** @phpstan-var MockObject&Query $query */
+        $query = $this->createMock(Query::class);
         $query->method('getResult')->willReturn($orders);
 
-        $qb = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
+        /** @phpstan-var MockObject&QueryBuilder $qb */
+        $qb = $this->createMock(QueryBuilder::class);
         $qb->method('innerJoin')->willReturnSelf();
         $qb->method('where')->willReturnSelf();
         $qb->method('andWhere')->willReturnSelf();
@@ -145,7 +178,8 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('订单已解冻，跳过处理', self::isArray());
+            ->with('订单已解冻，跳过处理', self::isArray())
+        ;
 
         $this->commandTester->execute([]);
 
@@ -163,12 +197,14 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(\Tourze\WechatPayProfitShareBundle\Request\ProfitShareUnfreezeRequest::class))
-            ->willReturn($unfrozenOrder);
+            ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(ProfitShareUnfreezeRequest::class))
+            ->willReturn($unfrozenOrder)
+        ;
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('分账资金解冻成功', self::isArray());
+            ->with('分账资金解冻成功', self::isArray())
+        ;
 
         $this->commandTester->execute([]);
 
@@ -185,22 +221,19 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order->method('getMerchant')->willReturn($merchant);
-        $order->method('getSubMchId')->willReturn('1234567890');
-        $order->method('getTransactionId')->willReturn('TX1234567890');
-        $order->method('getOutOrderNo')->willReturn('ORDER123');
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->with($merchant, self::isInstanceOf(\Tourze\WechatPayProfitShareBundle\Request\ProfitShareUnfreezeRequest::class))
-            ->willReturn($unfrozenOrder);
-
-        $unfrozenOrder->method('isUnfreezeUnsplit')->willReturn(false);
+            ->with($merchant, self::isInstanceOf(ProfitShareUnfreezeRequest::class))
+            ->willReturn($unfrozenOrder)
+        ;
 
         $this->logger->expects($this->once())
             ->method('warning')
-            ->with('分账资金解冻状态未知', self::isArray());
+            ->with('分账资金解冻状态未知', self::isArray())
+        ;
 
         $this->commandTester->execute([]);
 
@@ -215,12 +248,13 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order->method('getMerchant')->willReturn(null);
 
         $this->logger->expects($this->once())
             ->method('error')
-            ->with('分账订单缺少商户信息', self::isArray());
+            ->with('分账订单缺少商户信息', self::isArray())
+        ;
 
         $this->commandTester->execute([]);
 
@@ -236,19 +270,18 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order->method('getMerchant')->willReturn($merchant);
-        $order->method('getSubMchId')->willReturn('1234567890');
-        $order->method('getTransactionId')->willReturn('TX1234567890');
-        $order->method('getOutOrderNo')->willReturn('ORDER123');
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->willThrowException(new \RuntimeException('Unfreeze error'));
+            ->willThrowException(new \RuntimeException('Unfreeze error'))
+        ;
 
         $this->logger->expects($this->once())
             ->method('error')
-            ->with('分账资金解冻失败', self::isArray());
+            ->with('分账资金解冻失败', self::isArray())
+        ;
 
         $this->commandTester->execute([]);
 
@@ -265,7 +298,8 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->willReturn($order);
+            ->willReturn($order)
+        ;
 
         $this->commandTester->execute(['--force-unfreeze' => true]);
 
@@ -279,10 +313,12 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
      */
     private function setupOrderRepositoryWithoutTimeCheck(array $orders): void
     {
-        $query = $this->createMock(\Doctrine\ORM\Query::class);
+        /** @phpstan-var MockObject&Query $query */
+        $query = $this->createMock(Query::class);
         $query->method('getResult')->willReturn($orders);
 
-        $qb = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
+        /** @phpstan-var MockObject&QueryBuilder $qb */
+        $qb = $this->createMock(QueryBuilder::class);
         $qb->method('innerJoin')->willReturnSelf();
         $qb->method('where')->willReturnSelf();
         $qb->method('andWhere')->willReturnSelf();
@@ -310,10 +346,9 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepositoryWithCustomTime([$order], 24);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
-
         $this->profitShareService->expects($this->never())
-            ->method('unfreezeRemainingAmount');
+            ->method('unfreezeRemainingAmount')
+        ;
 
         $this->commandTester->execute(['--unfreeze-hours' => 24]);
 
@@ -329,10 +364,9 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
-
         $this->profitShareService->expects($this->never())
-            ->method('unfreezeRemainingAmount');
+            ->method('unfreezeRemainingAmount')
+        ;
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -348,10 +382,9 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepositoryWithCustomTime([$order], 24);
 
-        $order->method('isUnfreezeUnsplit')->willReturn(false);
-
         $this->profitShareService->expects($this->never())
-            ->method('unfreezeRemainingAmount');
+            ->method('unfreezeRemainingAmount')
+        ;
 
         $this->commandTester->execute(['--unfreeze-hours' => 24]);
 
@@ -369,7 +402,8 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->willReturn($order);
+            ->willReturn($order)
+        ;
 
         $this->commandTester->execute(['--force-unfreeze' => true]);
 

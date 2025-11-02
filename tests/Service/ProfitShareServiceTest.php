@@ -7,8 +7,8 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Psr\Log\LoggerInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
@@ -21,6 +21,9 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareService::class)]
 class ProfitShareServiceTest extends AbstractIntegrationTestCase
@@ -28,16 +31,19 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
     protected function onSetUp(): void
     {
     }
+
     public function testRequestProfitShare(): void
     {
         // 创建Mock依赖
         $orderRepository = $this->createMock(ProfitShareOrderRepository::class);
         $orderRepository->expects($this->once())
             ->method('findOneBy')
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $orderRepository->expects($this->once())
             ->method('save')
-            ->with(self::isInstanceOf(ProfitShareOrder::class));
+            ->with(self::isInstanceOf(ProfitShareOrder::class))
+        ;
 
         $operationRepository = $this->createMock(ProfitShareOperationLogRepository::class);
         $operationRepository->expects($this->once())->method('save');
@@ -64,7 +70,8 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
         $builderFactory = $this->createMock(WechatPayBuilder::class);
         $builderFactory->expects($this->once())
             ->method('genBuilder')
-            ->willReturn($builder);
+            ->willReturn($builder)
+        ;
         $logger = $this->createMock(LoggerInterface::class);
 
         // 将Mock依赖注入到容器中
@@ -106,10 +113,12 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
         $orderRepository = $this->createMock(ProfitShareOrderRepository::class);
         $orderRepository->expects($this->once())
             ->method('findOneBy')
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $orderRepository->expects($this->once())
             ->method('save')
-            ->with(self::isInstanceOf(ProfitShareOrder::class));
+            ->with(self::isInstanceOf(ProfitShareOrder::class))
+        ;
 
         $operationRepository = $this->createMock(ProfitShareOperationLogRepository::class);
         $operationRepository->expects($this->once())->method('save');
@@ -124,7 +133,8 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
         $builderFactory = $this->createMock(WechatPayBuilder::class);
         $builderFactory->expects($this->once())
             ->method('genBuilder')
-            ->willReturn($builder);
+            ->willReturn($builder)
+        ;
         $logger = $this->createMock(LoggerInterface::class);
 
         // 将Mock依赖注入到容器中
@@ -158,7 +168,8 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
         $orderRepository = $this->createMock(ProfitShareOrderRepository::class);
         $orderRepository->expects($this->once())
             ->method('findOneBy')
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $orderRepository->expects($this->once())->method('save');
 
         $operationRepository = $this->createMock(ProfitShareOperationLogRepository::class);
@@ -174,7 +185,8 @@ class ProfitShareServiceTest extends AbstractIntegrationTestCase
         $builderFactory = $this->createMock(WechatPayBuilder::class);
         $builderFactory->expects($this->once())
             ->method('genBuilder')
-            ->willReturn($builder);
+            ->willReturn($builder)
+        ;
         $logger = $this->createMock(LoggerInterface::class);
 
         // 将Mock依赖注入到容器中

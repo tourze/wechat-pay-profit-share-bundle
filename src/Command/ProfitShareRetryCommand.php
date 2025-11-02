@@ -177,7 +177,7 @@ class ProfitShareRetryCommand extends Command
         int $maxRetry,
         int $retryInterval,
         \DateTimeImmutable $retryThreshold,
-        \DateTimeImmutable $now
+        \DateTimeImmutable $now,
     ): array {
         try {
             // 检查是否达到最大重试次数
@@ -220,7 +220,7 @@ class ProfitShareRetryCommand extends Command
                 'error' => $exception->getMessage(),
             ]);
 
-            if ($dryRun === false) {
+            if (false === $dryRun) {
                 $receiver->setRetryCount($receiver->getRetryCount() + 1);
                 $receiver->setNextRetryAt(new \DateTimeImmutable("+{$retryInterval} minutes"));
                 $this->entityManager->persist($receiver);
@@ -237,17 +237,17 @@ class ProfitShareRetryCommand extends Command
     private function shouldSkipReceiver(
         ProfitShareReceiver $receiver,
         \DateTimeImmutable $now,
-        \DateTimeImmutable $retryThreshold
+        \DateTimeImmutable $retryThreshold,
     ): bool {
         // 检查是否到了重试时间
         $nextRetryAt = $receiver->getNextRetryAt();
-        if ($nextRetryAt !== null && $nextRetryAt > $now) {
+        if (null !== $nextRetryAt && $nextRetryAt > $now) {
             return true;
         }
 
         // 检查距离上次重试是否足够间隔
         $updatedAt = $receiver->getUpdatedAt();
-        if ($updatedAt !== null && $updatedAt > $retryThreshold) {
+        if (null !== $updatedAt && $updatedAt > $retryThreshold) {
             return true;
         }
 
@@ -262,7 +262,7 @@ class ProfitShareRetryCommand extends Command
     private function handleMaxRetryReached(
         ProfitShareReceiver $receiver,
         bool $dryRun,
-        int $maxRetry
+        int $maxRetry,
     ): array {
         $this->logger->warning('分账接收方达到最大重试次数，标记为最终失败', [
             'receiver_id' => $receiver->getId(),
@@ -272,7 +272,7 @@ class ProfitShareRetryCommand extends Command
             'max_retry' => $maxRetry,
         ]);
 
-        if ($dryRun === false) {
+        if (false === $dryRun) {
             $receiver->setFinallyFailed(true);
             $this->entityManager->persist($receiver);
             $this->entityManager->flush();
@@ -291,7 +291,7 @@ class ProfitShareRetryCommand extends Command
         ProfitShareOrder $order,
         Merchant $merchant,
         bool $dryRun,
-        int $retryInterval
+        int $retryInterval,
     ): array {
         if ($dryRun) {
             return $this->simulateRetry($receiver);
@@ -326,7 +326,7 @@ class ProfitShareRetryCommand extends Command
         ProfitShareReceiver $receiver,
         ProfitShareOrder $order,
         Merchant $merchant,
-        int $retryInterval
+        int $retryInterval,
     ): array {
         // 重新查询订单状态（这可能会触发重新分账）
         $updatedOrder = $this->profitShareService->queryProfitShareOrder(
@@ -356,7 +356,7 @@ class ProfitShareRetryCommand extends Command
      */
     private function findMatchingReceiver(
         ProfitShareReceiver $receiver,
-        ProfitShareOrder $updatedOrder
+        ProfitShareOrder $updatedOrder,
     ): ?ProfitShareReceiver {
         foreach ($updatedOrder->getReceivers() as $r) {
             if ($r->getAccount() === $receiver->getAccount()
@@ -402,7 +402,7 @@ class ProfitShareRetryCommand extends Command
             'account' => $receiver->getAccount(),
             'amount' => $receiver->getAmount(),
             'retry_count' => $receiver->getRetryCount(),
-            'next_retry_at' => $nextRetryAt !== null ? $nextRetryAt->format('Y-m-d H:i:s') : null,
+            'next_retry_at' => null !== $nextRetryAt ? $nextRetryAt->format('Y-m-d H:i:s') : null,
         ]);
 
         $this->entityManager->persist($receiver);
@@ -429,7 +429,7 @@ class ProfitShareRetryCommand extends Command
             ])
         ;
 
-        if ($merchantId !== null) {
+        if (null !== $merchantId) {
             $qb->andWhere('m.id = :merchantId')
                 ->setParameter('merchantId', $merchantId)
             ;

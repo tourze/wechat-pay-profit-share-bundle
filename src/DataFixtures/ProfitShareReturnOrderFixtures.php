@@ -51,7 +51,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'out_return_no' => 'R202401150001',
             'return_mch_id' => '1900000109',
             'amount' => 300,
-            'description' => '用户申请退款，回退分账金额'
+            'description' => '用户申请退款，回退分账金额',
         ], JSON_THROW_ON_ERROR));
         $returnOrderProcessing->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -60,13 +60,13 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'out_return_no' => 'R202401150001',
             'order_id' => '3008450740201411110007820472',
             'state' => 'PROCESSING',
-            'amount' => 300
+            'amount' => 300,
         ], JSON_THROW_ON_ERROR));
         $returnOrderProcessing->setMetadata([
             'request_id' => 'req-return-20240115-001',
             'refund_order_no' => 'RF202401150001',
             'reason' => '用户申请退款',
-            'operator' => 'admin'
+            'operator' => 'admin',
         ]);
         $manager->persist($returnOrderProcessing);
         $this->addReference(self::RETURN_ORDER_PROCESSING_REFERENCE, $returnOrderProcessing);
@@ -91,7 +91,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'out_return_no' => 'R202401140001',
             'return_mch_id' => '1900000109',
             'amount' => 500,
-            'description' => '订单退款，分账金额回退'
+            'description' => '订单退款，分账金额回退',
         ], JSON_THROW_ON_ERROR));
         $returnOrderSuccess->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -103,7 +103,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'amount' => 500,
             'return_account' => '1900000109',
             'return_amount' => 500,
-            'fail_reason' => null
+            'fail_reason' => null,
         ], JSON_THROW_ON_ERROR));
         $returnOrderSuccess->setMetadata([
             'request_id' => 'req-return-20240114-001',
@@ -111,7 +111,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'reason' => '订单退款',
             'operator' => 'admin',
             'settlement_time' => '2024-01-14 15:30:45',
-            'actual_return_amount' => 500
+            'actual_return_amount' => 500,
         ]);
         $manager->persist($returnOrderSuccess);
         $this->addReference(self::RETURN_ORDER_SUCCESS_REFERENCE, $returnOrderSuccess);
@@ -136,7 +136,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'out_return_no' => 'R202401130001',
             'return_mch_id' => '1900000111',
             'amount' => 200,
-            'description' => '测试回退失败场景'
+            'description' => '测试回退失败场景',
         ], JSON_THROW_ON_ERROR));
         $returnOrderFailed->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -148,7 +148,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'return_account' => '1900000111',
             'return_amount' => 0,
             'fail_reason' => 'ACCOUNT_ABNORMAL',
-            'fail_code' => 'PARAM_ERROR'
+            'fail_code' => 'PARAM_ERROR',
         ], JSON_THROW_ON_ERROR));
         $returnOrderFailed->setMetadata([
             'request_id' => 'req-return-20240113-001',
@@ -157,7 +157,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'error_code' => 'ACCOUNT_ABNORMAL',
             'error_message' => '回退商户账户异常',
             'retry_count' => 2,
-            'last_retry_at' => '2024-01-13 11:25:00'
+            'last_retry_at' => '2024-01-13 11:25:00',
         ]);
         $manager->persist($returnOrderFailed);
         $this->addReference(self::RETURN_ORDER_FAILED_REFERENCE, $returnOrderFailed);
@@ -183,7 +183,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'out_return_no' => 'R202401120001',
             'return_mch_id' => '1900000109',
             'amount' => 1000,
-            'description' => '部分回退测试'
+            'description' => '部分回退测试',
         ], JSON_THROW_ON_ERROR));
         $returnOrderPartial->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -196,7 +196,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'return_account' => '1900000109',
             'return_amount' => 800,
             'fail_reason' => 'INSUFFICIENT_BALANCE',
-            'unsplit_amount' => 200
+            'unsplit_amount' => 200,
         ], JSON_THROW_ON_ERROR));
         $returnOrderPartial->setMetadata([
             'request_id' => 'req-return-20240112-001',
@@ -204,7 +204,7 @@ class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInte
             'operator' => 'admin',
             'actual_return_amount' => 800,
             'unsplit_amount' => 200,
-            'settlement_time' => '2024-01-12 16:46:00'
+            'settlement_time' => '2024-01-12 16:46:00',
         ]);
         $manager->persist($returnOrderPartial);
 

@@ -99,7 +99,7 @@ class ProfitShareService
         Merchant $merchant,
         ?string $subMchId,
         string $outOrderNo,
-        ?string $transactionId = null
+        ?string $transactionId = null,
     ): ProfitShareOrder {
         $query = [
             'sub_mchid' => $subMchId,
@@ -159,7 +159,7 @@ class ProfitShareService
      */
     public function unfreezeRemainingAmount(
         Merchant $merchant,
-        ProfitShareUnfreezeRequest $request
+        ProfitShareUnfreezeRequest $request,
     ): ProfitShareOrder {
         $payload = $request->toPayload();
         $segment = 'v3/profitsharing/orders/unfreeze';

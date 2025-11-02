@@ -5,27 +5,38 @@ declare(strict_types=1);
 namespace Tourze\WechatPayProfitShareBundle\Tests\Command;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
 use Tourze\WechatPayProfitShareBundle\Command\ProfitShareBillDownloadCommand;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareBillTask;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareBillStatus;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareBillTaskRepository;
+use Tourze\WechatPayProfitShareBundle\Request\ProfitShareBillDownloadRequest;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareBillService;
 use WechatPayBundle\Entity\Merchant;
 
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareBillDownloadCommand::class)]
 class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
 {
     private CommandTester $commandTester;
+
+    /** @phpstan-var MockObject&ProfitShareBillTaskRepository */
     private ProfitShareBillTaskRepository $billTaskRepository;
+
+    /** @phpstan-var MockObject&ProfitShareBillService */
     private ProfitShareBillService $billService;
+
+    /** @phpstan-var MockObject&LoggerInterface */
     private LoggerInterface $logger;
 
     public function testExecuteWithNoTasks(): void
@@ -33,7 +44,8 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->commandTester->execute([]);
 
@@ -42,20 +54,20 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
-    
     private function createMockTask(): ProfitShareBillTask
     {
         $task = $this->getMockBuilder(ProfitShareBillTask::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getId', 'getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant', 'setLocalPath'])
-            ->getMock();
-        $task->method('getId')->willReturn('1');
+            ->onlyMethods(['getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant', 'setLocalPath'])
+            ->getMock()
+        ;
         // 使用DateTimeImmutable以匹配Entity声明
         $task->method('getCreatedAt')->willReturn(new \DateTimeImmutable('-1 day'));
         // 设置billDate以避免属性未初始化错误
         $task->method('getBillDate')->willReturn(new \DateTimeImmutable('-1 day'));
         $task->method('getSubMchId')->willReturn('1234567890');
         $task->method('getMerchant')->willReturn(null);
+
         return $task;
     }
 
@@ -64,20 +76,21 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $merchant = $this->createMockMerchant();
         $task = $this->getMockBuilder(ProfitShareBillTask::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getId', 'getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant', 'setLocalPath'])
-            ->getMock();
-        $task->method('getId')->willReturn('1');
+            ->onlyMethods(['getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant', 'setLocalPath'])
+            ->getMock()
+        ;
         $task->method('getCreatedAt')->willReturn(new \DateTimeImmutable('-1 day'));
         $task->method('getBillDate')->willReturn(new \DateTimeImmutable('-1 day'));
         $task->method('getSubMchId')->willReturn('1234567890');
         $task->method('getMerchant')->willReturn($merchant);
+
         return $task;
     }
 
     private function createMockMerchant(): Merchant
     {
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('getId')->willReturn('1');
+
         return $merchant;
     }
 
@@ -85,14 +98,15 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
     {
         $task = $this->getMockBuilder(ProfitShareBillTask::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getId', 'getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant'])
-            ->getMock();
-        $task->method('getId')->willReturn('1');
+            ->onlyMethods(['getCreatedAt', 'getBillDate', 'getSubMchId', 'getMerchant'])
+            ->getMock()
+        ;
         // 设置为8天前，超过默认的7天过期期限
         $task->method('getCreatedAt')->willReturn(new \DateTimeImmutable('-8 days'));
         $task->method('getBillDate')->willReturn(new \DateTimeImmutable('-8 days'));
         $task->method('getSubMchId')->willReturn('1234567890');
         $task->method('getMerchant')->willReturn(null);
+
         return $task;
     }
 
@@ -103,10 +117,12 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([$task]);
+            ->willReturn([$task])
+        ;
 
         $this->billService->expects($this->never())
-            ->method('downloadBill');
+            ->method('downloadBill')
+        ;
 
         $this->commandTester->execute([]);
 
@@ -122,12 +138,14 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([$task]);
+            ->willReturn([$task])
+        ;
 
         $this->billService->expects($this->once())
             ->method('downloadBill')
-            ->with(self::isInstanceOf(Merchant::class), $task, self::isInstanceOf(\Tourze\WechatPayProfitShareBundle\Request\ProfitShareBillDownloadRequest::class))
-            ->willReturn($task);
+            ->with(self::isInstanceOf(Merchant::class), $task, self::isInstanceOf(ProfitShareBillDownloadRequest::class))
+            ->willReturn($task)
+        ;
 
         $this->commandTester->execute([]);
 
@@ -146,7 +164,6 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         self::markTestSkipped('跳过此测试，因为无法模拟trait方法getCreatedAt()');
     }
 
-    
     public function testOptionDryRun(): void
     {
         $task = $this->createMockTask();
@@ -155,10 +172,12 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([$task]);
+            ->willReturn([$task])
+        ;
 
         $this->billService->expects($this->never())
-            ->method('downloadBill');
+            ->method('downloadBill')
+        ;
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -174,10 +193,12 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([$task]);
+            ->willReturn([$task])
+        ;
 
         $this->billService->expects($this->never())
-            ->method('downloadBill');
+            ->method('downloadBill')
+        ;
 
         $this->commandTester->execute(['--expire-days' => 10]);
 
@@ -193,12 +214,14 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         $this->billTaskRepository->expects($this->once())
             ->method('findBy')
             ->with(['status' => ProfitShareBillStatus::READY])
-            ->willReturn([$task]);
+            ->willReturn([$task])
+        ;
 
         $this->billService->expects($this->once())
             ->method('downloadBill')
-            ->with(self::isInstanceOf(Merchant::class), $task, self::isInstanceOf(\Tourze\WechatPayProfitShareBundle\Request\ProfitShareBillDownloadRequest::class))
-            ->willReturn($task);
+            ->with(self::isInstanceOf(Merchant::class), $task, self::isInstanceOf(ProfitShareBillDownloadRequest::class))
+            ->willReturn($task)
+        ;
 
         $this->commandTester->execute(['--download-path' => '/custom/path']);
 
@@ -215,9 +238,10 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
             ->method('findBy')
             ->with([
                 'status' => ProfitShareBillStatus::READY,
-                'merchant' => '123'
+                'merchant' => '123',
             ])
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->commandTester->execute(['--merchant-id' => '123']);
 
@@ -253,10 +277,11 @@ class ProfitShareBillDownloadCommandTest extends AbstractCommandTestCase
         // 对于 Logger，使用 try-catch 处理，因为它可能已经被其他测试初始化
         try {
             $container->set('logger', $this->logger);
-        } catch (\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             // 使用现有的logger
             /** @var LoggerInterface $logger */
             $logger = $container->get('logger');
+            /** @phpstan-var MockObject&LoggerInterface $logger */
             $this->logger = $logger;
         }
 

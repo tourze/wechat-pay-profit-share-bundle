@@ -15,6 +15,9 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareOrder::class)]
 class ProfitShareOrderTest extends AbstractEntityTestCase
 {
@@ -32,7 +35,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testEntityInitialization(): void
     {
-                $this->assertInstanceOf(ProfitShareOrder::class, $this->profitShareOrder);
+        $this->assertInstanceOf(ProfitShareOrder::class, $this->profitShareOrder);
         $this->assertNull($this->profitShareOrder->getId());
         $this->assertNull($this->profitShareOrder->getMerchant());
         $this->assertNull($this->profitShareOrder->getAppId());
@@ -58,7 +61,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testMerchantGetterSetter(): void
     {
-                $merchant = $this->createMock(Merchant::class);
+        $merchant = $this->createMock(Merchant::class);
 
         $this->assertNull($this->profitShareOrder->getMerchant());
 
@@ -142,7 +145,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testStateGetterSetter(): void
     {
-                $this->assertEquals(ProfitShareOrderState::PROCESSING, $this->profitShareOrder->getState());
+        $this->assertEquals(ProfitShareOrderState::PROCESSING, $this->profitShareOrder->getState());
 
         foreach (ProfitShareOrderState::cases() as $state) {
             $this->profitShareOrder->setState($state);
@@ -236,7 +239,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
     #[DataProvider('metadataProvider')]
     public function testMetadataGetterSetter(?array $metadata): void
     {
-                $this->profitShareOrder->setMetadata($metadata);
+        $this->profitShareOrder->setMetadata($metadata);
         $this->assertEquals($metadata, $this->profitShareOrder->getMetadata());
     }
 
@@ -256,7 +259,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testReceiversCollection(): void
     {
-                $receivers = $this->profitShareOrder->getReceivers();
+        $receivers = $this->profitShareOrder->getReceivers();
         $this->assertInstanceOf(ArrayCollection::class, $receivers);
         $this->assertEmpty($receivers);
 
@@ -293,19 +296,20 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testReceiversBidirectionalRelationship(): void
     {
-                $receiver = $this->createMock(ProfitShareReceiver::class);
+        $receiver = $this->createMock(ProfitShareReceiver::class);
 
         // Mock receiver的方法调用
         $receiver->expects($this->once())
             ->method('setOrder')
-            ->with($this->profitShareOrder);
+            ->with($this->profitShareOrder)
+        ;
 
         $this->profitShareOrder->addReceiver($receiver);
     }
 
     public function testTimestampGetters(): void
     {
-                // 测试初始状态
+        // 测试初始状态
         $this->assertNull($this->profitShareOrder->getCreatedAt());
         $this->assertNull($this->profitShareOrder->getUpdatedAt());
 
@@ -316,7 +320,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-                $this->assertEmpty((string) $this->profitShareOrder);
+        $this->assertEmpty((string) $this->profitShareOrder);
 
         $this->profitShareOrder->setOutOrderNo('ORDER123456789');
         $this->assertEquals('ORDER123456789', (string) $this->profitShareOrder);
@@ -324,13 +328,13 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testStringableImplementation(): void
     {
-                $this->assertInstanceOf(\Stringable::class, $this->profitShareOrder);
+        $this->assertInstanceOf(\Stringable::class, $this->profitShareOrder);
         $this->assertIsString((string) $this->profitShareOrder);
     }
 
     public function testComplexOrderWorkflow(): void
     {
-                // 模拟一个完整的分账订单工作流程
+        // 模拟一个完整的分账订单工作流程
         $merchant = $this->createMock(Merchant::class);
 
         // 1. 初始化订单
@@ -406,7 +410,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testOrderStateTransitions(): void
     {
-                $states = [
+        $states = [
             ProfitShareOrderState::PROCESSING,
             ProfitShareOrderState::FINISHED,
             ProfitShareOrderState::CLOSED,
@@ -421,7 +425,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testOrderCompleteWorkflow(): void
     {
-                // 模拟订单完成流程
+        // 模拟订单完成流程
         $this->profitShareOrder->setSubMchId('1234567890123456789');
         $this->profitShareOrder->setTransactionId('wx1234567890123456789');
         $this->profitShareOrder->setOutOrderNo('ORDER1234567890123456');
@@ -446,7 +450,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
      */
     private function assertIsNullable(mixed $value, string $expectedType): void
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertTrue(true);
         } else {
             $this->assertInstanceOf($expectedType, $value);

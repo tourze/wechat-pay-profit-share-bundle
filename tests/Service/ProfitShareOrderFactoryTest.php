@@ -13,6 +13,9 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverRequest;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareOrderFactory;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareOrderFactory::class)]
 class ProfitShareOrderFactoryTest extends TestCase
 {
@@ -128,5 +131,29 @@ class ProfitShareOrderFactoryTest extends TestCase
         $this->assertNull($order->getSubAppId());
         $this->assertCount(0, $order->getReceivers());
         $this->assertFalse($order->isUnfreezeUnsplit());
+    }
+
+    public function testBuildOrderFromResponse(): void
+    {
+        $merchant = $this->createMock(Merchant::class);
+        $responseData = [
+            'sub_mchid' => 'test_sub_mch_id',
+            'transaction_id' => 'test_transaction_id',
+            'out_order_no' => 'test_out_order_no',
+            'appid' => 'test_app_id',
+            'sub_appid' => 'test_sub_app_id',
+            'order_id' => 'test_order_id',
+        ];
+
+        $order = $this->factory->buildOrderFromResponse($merchant, $responseData);
+
+        $this->assertInstanceOf(ProfitShareOrder::class, $order);
+        $this->assertSame($merchant, $order->getMerchant());
+        $this->assertSame('test_sub_mch_id', $order->getSubMchId());
+        $this->assertSame('test_transaction_id', $order->getTransactionId());
+        $this->assertSame('test_out_order_no', $order->getOutOrderNo());
+        $this->assertSame('test_app_id', $order->getAppId());
+        $this->assertSame('test_sub_app_id', $order->getSubAppId());
+        $this->assertSame('test_order_id', $order->getOrderId());
     }
 }

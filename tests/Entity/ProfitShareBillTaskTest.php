@@ -12,6 +12,9 @@ use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareBillTask;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareBillStatus;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareBillTask::class)]
 class ProfitShareBillTaskTest extends AbstractEntityTestCase
 {
@@ -29,7 +32,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testEntityInitialization(): void
     {
-                $this->assertInstanceOf(ProfitShareBillTask::class, $this->profitShareBillTask);
+        $this->assertInstanceOf(ProfitShareBillTask::class, $this->profitShareBillTask);
         $this->assertNull($this->profitShareBillTask->getId());
         $this->assertNull($this->profitShareBillTask->getMerchant());
         $this->assertNull($this->profitShareBillTask->getSubMchId());
@@ -43,7 +46,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testMerchantGetterSetter(): void
     {
-                $merchant = $this->createMock(Merchant::class);
+        $merchant = $this->createMock(Merchant::class);
 
         $this->assertNull($this->profitShareBillTask->getMerchant());
 
@@ -57,7 +60,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
     #[DataProvider('subMchIdProvider')]
     public function testSubMchIdGetterSetter(?string $subMchId): void
     {
-                $this->profitShareBillTask->setSubMchId($subMchId);
+        $this->profitShareBillTask->setSubMchId($subMchId);
         $this->assertEquals($subMchId, $this->profitShareBillTask->getSubMchId());
     }
 
@@ -77,7 +80,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testBillDateGetterSetter(): void
     {
-                $billDate = new \DateTimeImmutable('2024-01-01');
+        $billDate = new \DateTimeImmutable('2024-01-01');
 
         $this->profitShareBillTask->setBillDate($billDate);
         $this->assertSame($billDate, $this->profitShareBillTask->getBillDate());
@@ -145,7 +148,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testStatusGetterSetter(): void
     {
-                $this->assertEquals(ProfitShareBillStatus::PENDING, $this->profitShareBillTask->getStatus());
+        $this->assertEquals(ProfitShareBillStatus::PENDING, $this->profitShareBillTask->getStatus());
 
         foreach (ProfitShareBillStatus::cases() as $status) {
             $this->profitShareBillTask->setStatus($status);
@@ -155,7 +158,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testDownloadedAtGetterSetter(): void
     {
-                $this->assertNull($this->profitShareBillTask->getDownloadedAt());
+        $this->assertNull($this->profitShareBillTask->getDownloadedAt());
 
         $downloadedAt = new \DateTimeImmutable('2024-01-01 12:00:00');
         $this->profitShareBillTask->setDownloadedAt($downloadedAt);
@@ -201,7 +204,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
     #[DataProvider('metadataProvider')]
     public function testMetadataGetterSetter(?array $metadata): void
     {
-                $this->profitShareBillTask->setMetadata($metadata);
+        $this->profitShareBillTask->setMetadata($metadata);
         $this->assertEquals($metadata, $this->profitShareBillTask->getMetadata());
     }
 
@@ -221,7 +224,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testTimestampGetters(): void
     {
-                // 测试初始状态
+        // 测试初始状态
         $this->assertNull($this->profitShareBillTask->getCreatedAt());
         $this->assertNull($this->profitShareBillTask->getUpdatedAt());
 
@@ -233,7 +236,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-                // 测试空值情况
+        // 测试空值情况
         $this->profitShareBillTask->setBillDate(new \DateTimeImmutable('2024-01-01'));
         $expected = 'ProfitShareBillTask(unknown-2024-01-01-pending)';
         $this->assertEquals($expected, (string) $this->profitShareBillTask);
@@ -247,13 +250,13 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 
     public function testStringableImplementation(): void
     {
-                $this->assertInstanceOf(\Stringable::class, $this->profitShareBillTask);
+        $this->assertInstanceOf(\Stringable::class, $this->profitShareBillTask);
         $this->assertIsString((string) $this->profitShareBillTask);
     }
 
     public function testComplexWorkflow(): void
     {
-                // 模拟一个完整的账单任务工作流程
+        // 模拟一个完整的账单任务工作流程
         $merchant = $this->createMock(Merchant::class);
         $billDate = new \DateTimeImmutable('2024-01-01');
 
@@ -290,7 +293,7 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
      */
     private function assertIsNullable(mixed $value, string $expectedType): void
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertTrue(true);
         } else {
             $this->assertInstanceOf($expectedType, $value);

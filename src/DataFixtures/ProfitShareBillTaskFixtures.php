@@ -47,12 +47,12 @@ class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterfa
         $billTaskPending->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
             'bill_date' => '2024-01-15',
-            'tar_type' => 'GZIP'
+            'tar_type' => 'GZIP',
         ], JSON_THROW_ON_ERROR));
         $billTaskPending->setMetadata([
             'created_by' => 'system',
             'auto_retry' => true,
-            'retry_count' => 0
+            'retry_count' => 0,
         ]);
         $manager->persist($billTaskPending);
         $this->addReference(self::BILL_TASK_PENDING_REFERENCE, $billTaskPending);
@@ -70,16 +70,16 @@ class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterfa
         $billTaskReady->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
             'bill_date' => '2024-01-14',
-            'tar_type' => 'GZIP'
+            'tar_type' => 'GZIP',
         ], JSON_THROW_ON_ERROR));
         $billTaskReady->setResponsePayload(json_encode([
             'download_url' => 'https://api.mch.weixin.qq.com/v3/profitsharing/bills?file_token=xxxxx',
             'hash_type' => 'SHA1',
-            'hash_value' => 'e1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0'
+            'hash_value' => 'e1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0',
         ], JSON_THROW_ON_ERROR));
         $billTaskReady->setMetadata([
             'created_by' => 'system',
-            'expires_at' => '2024-01-21 23:59:59'
+            'expires_at' => '2024-01-21 23:59:59',
         ]);
         $manager->persist($billTaskReady);
         $this->addReference(self::BILL_TASK_READY_REFERENCE, $billTaskReady);
@@ -99,18 +99,18 @@ class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterfa
         $billTaskDownloaded->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
             'bill_date' => '2024-01-13',
-            'tar_type' => 'GZIP'
+            'tar_type' => 'GZIP',
         ], JSON_THROW_ON_ERROR));
         $billTaskDownloaded->setResponsePayload(json_encode([
             'download_url' => 'https://api.mch.weixin.qq.com/v3/profitsharing/bills?file_token=yyyyy',
             'hash_type' => 'SHA1',
-            'hash_value' => 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0'
+            'hash_value' => 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0',
         ], JSON_THROW_ON_ERROR));
         $billTaskDownloaded->setMetadata([
             'created_by' => 'system',
             'file_size' => 2048576,
             'record_count' => 1567,
-            'download_duration' => 3.45
+            'download_duration' => 3.45,
         ]);
         $manager->persist($billTaskDownloaded);
         $this->addReference(self::BILL_TASK_DOWNLOADED_REFERENCE, $billTaskDownloaded);
@@ -125,18 +125,18 @@ class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterfa
         $billTaskFailed->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
             'bill_date' => '2024-01-12',
-            'tar_type' => 'GZIP'
+            'tar_type' => 'GZIP',
         ], JSON_THROW_ON_ERROR));
         $billTaskFailed->setResponsePayload(json_encode([
             'code' => 'BILL_NOT_EXIST',
-            'message' => '账单不存在'
+            'message' => '账单不存在',
         ], JSON_THROW_ON_ERROR));
         $billTaskFailed->setMetadata([
             'created_by' => 'system',
             'error_code' => 'BILL_NOT_EXIST',
             'error_message' => '账单不存在',
             'retry_count' => 3,
-            'last_retry_at' => '2024-01-12 15:45:00'
+            'last_retry_at' => '2024-01-12 15:45:00',
         ]);
         $manager->persist($billTaskFailed);
         $this->addReference(self::BILL_TASK_FAILED_REFERENCE, $billTaskFailed);

@@ -11,6 +11,9 @@ use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReturnOrder;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareReturnOrder::class)]
 class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 {
@@ -28,7 +31,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testEntityInitialization(): void
     {
-                $this->assertInstanceOf(ProfitShareReturnOrder::class, $this->profitShareReturnOrder);
+        $this->assertInstanceOf(ProfitShareReturnOrder::class, $this->profitShareReturnOrder);
         $this->assertNull($this->profitShareReturnOrder->getId());
         $this->assertNull($this->profitShareReturnOrder->getMerchant());
         $this->assertNull($this->profitShareReturnOrder->getOrderId());
@@ -47,7 +50,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testMerchantGetterSetter(): void
     {
-                $merchant = $this->createMock(Merchant::class);
+        $merchant = $this->createMock(Merchant::class);
 
         $this->assertNull($this->profitShareReturnOrder->getMerchant());
 
@@ -145,7 +148,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
     #[DataProvider('amountProvider')]
     public function testAmountGetterSetter(int $amount): void
     {
-                $this->profitShareReturnOrder->setAmount($amount);
+        $this->profitShareReturnOrder->setAmount($amount);
         $this->assertEquals($amount, $this->profitShareReturnOrder->getAmount());
     }
 
@@ -228,7 +231,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
     #[DataProvider('metadataProvider')]
     public function testMetadataGetterSetter(?array $metadata): void
     {
-                $this->profitShareReturnOrder->setMetadata($metadata);
+        $this->profitShareReturnOrder->setMetadata($metadata);
         $this->assertEquals($metadata, $this->profitShareReturnOrder->getMetadata());
     }
 
@@ -250,7 +253,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testTimestampGetters(): void
     {
-                // 测试初始状态
+        // 测试初始状态
         $this->assertNull($this->profitShareReturnOrder->getCreatedAt());
         $this->assertNull($this->profitShareReturnOrder->getUpdatedAt());
 
@@ -261,7 +264,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-                $this->assertEmpty((string) $this->profitShareReturnOrder);
+        $this->assertEmpty((string) $this->profitShareReturnOrder);
 
         $this->profitShareReturnOrder->setOutReturnNo('RETURN123456789');
         $this->assertEquals('RETURN123456789', (string) $this->profitShareReturnOrder);
@@ -269,13 +272,13 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testStringableImplementation(): void
     {
-                $this->assertInstanceOf(\Stringable::class, $this->profitShareReturnOrder);
+        $this->assertInstanceOf(\Stringable::class, $this->profitShareReturnOrder);
         $this->assertIsString((string) $this->profitShareReturnOrder);
     }
 
     public function testSuccessfulReturnOrderWorkflow(): void
     {
-                // 模拟成功的回退订单工作流程
+        // 模拟成功的回退订单工作流程
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareReturnOrder->setMerchant($merchant);
@@ -340,7 +343,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testFailedReturnOrderWorkflow(): void
     {
-                // 模拟失败的回退订单工作流程
+        // 模拟失败的回退订单工作流程
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareReturnOrder->setMerchant($merchant);
@@ -385,7 +388,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testProcessingReturnOrderWorkflow(): void
     {
-                // 模拟处理中的回退订单工作流程
+        // 模拟处理中的回退订单工作流程
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareReturnOrder->setMerchant($merchant);
@@ -409,7 +412,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testReturnOrderStateTransitions(): void
     {
-                $states = ['PROCESSING', 'SUCCESS', 'FAILED'];
+        $states = ['PROCESSING', 'SUCCESS', 'FAILED'];
 
         foreach ($states as $state) {
             $this->profitShareReturnOrder->setResult($state);
@@ -419,7 +422,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testAmountValidation(): void
     {
-                // 测试各种金额情况
+        // 测试各种金额情况
         $amounts = [0, 1, 100, 1000, 10000, 100000];
 
         foreach ($amounts as $amount) {
@@ -430,7 +433,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testComplexReturnScenario(): void
     {
-                // 模拟复杂的回退场景
+        // 模拟复杂的回退场景
         $merchant = $this->createMock(Merchant::class);
 
         // 场景1：部分回退成功
@@ -495,7 +498,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 
     public function testReturnOrderWithNoOriginalOrder(): void
     {
-                // 测试没有原始订单号的回退（比如系统错误导致的回退）
+        // 测试没有原始订单号的回退（比如系统错误导致的回退）
         $merchant = $this->createMock(Merchant::class);
 
         $this->profitShareReturnOrder->setMerchant($merchant);
@@ -527,7 +530,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
      */
     private function assertIsNullable(mixed $value, string $expectedType): void
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertTrue(true);
         } else {
             $this->assertInstanceOf($expectedType, $value);

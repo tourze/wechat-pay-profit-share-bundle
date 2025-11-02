@@ -31,7 +31,7 @@ class ProfitShareResponseProcessor
         /** @var array<array<string, mixed>> $receiverData */
         $receiverData = $response['receivers'];
         $receiverRows = $this->prepareReceiverRows($receiverData);
-        if ($receiverRows === []) {
+        if ([] === $receiverRows) {
             return;
         }
 
@@ -153,7 +153,7 @@ class ProfitShareResponseProcessor
             $finishTimeStr = is_string($finishTime) ? $finishTime : '';
             $resultStr = is_string($result) ? $result : '';
 
-            if ($finishTimeStr !== '') {
+            if ('' !== $finishTimeStr) {
                 $allFinishTimes[] = $finishTimeStr;
                 if ('SUCCESS' === $resultStr) {
                     $allSuccessTimes[] = $finishTimeStr;
@@ -218,7 +218,7 @@ class ProfitShareResponseProcessor
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-        return $json === false ? null : $json;
+        return false === $json ? null : $json;
     }
 
     /**
@@ -230,7 +230,7 @@ class ProfitShareResponseProcessor
     {
         $minDate = null;
         foreach ($dates as $date) {
-            if ($minDate === null || $date < $minDate) {
+            if (null === $minDate || $date < $minDate) {
                 $minDate = $date;
             }
         }
@@ -247,7 +247,7 @@ class ProfitShareResponseProcessor
     {
         $maxDate = null;
         foreach ($dates as $date) {
-            if ($maxDate === null || $date > $maxDate) {
+            if (null === $maxDate || $date > $maxDate) {
                 $maxDate = $date;
             }
         }

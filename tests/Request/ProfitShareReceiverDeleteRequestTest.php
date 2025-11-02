@@ -8,6 +8,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverDeleteRequest;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareReceiverDeleteRequest::class)]
 class ProfitShareReceiverDeleteRequestTest extends TestCase
 {

@@ -17,7 +17,6 @@ use WechatPayBundle\Entity\Merchant;
 /**
  * @see https://pay.weixin.qq.com/doc/v3/partner/4012466854
  */
-
 #[ORM\Entity(repositoryClass: ProfitShareOperationLogRepository::class)]
 #[ORM\Table(name: 'wechat_pay_profit_share_operation_log', options: ['comment' => '微信支付-分账操作日志'])]
 class ProfitShareOperationLog implements \Stringable

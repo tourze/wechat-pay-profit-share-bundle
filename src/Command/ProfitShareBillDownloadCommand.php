@@ -87,6 +87,7 @@ class ProfitShareBillDownloadCommand extends Command
 
             if (0 === count($readyTasks)) {
                 $io->success('没有需要下载的账单');
+
                 return Command::SUCCESS;
             }
 
@@ -122,7 +123,7 @@ class ProfitShareBillDownloadCommand extends Command
     private function findReadyTasks(?string $merchantId): array
     {
         $criteria = ['status' => ProfitShareBillStatus::READY];
-        if ($merchantId !== null) {
+        if (null !== $merchantId) {
             $criteria['merchant'] = $merchantId;
         }
 
@@ -188,6 +189,7 @@ class ProfitShareBillDownloadCommand extends Command
         // 检查账单是否过期
         if ($task->getCreatedAt() < $expireThreshold) {
             $this->handleExpiredTask($task, $dryRun, $expireDays);
+
             return ['downloaded' => false, 'expired' => true, 'error' => false];
         }
 
@@ -199,6 +201,7 @@ class ProfitShareBillDownloadCommand extends Command
                 'sub_mchid' => $task->getSubMchId(),
                 'bill_date' => $task->getBillDate()->format('Y-m-d'),
             ]);
+
             return ['downloaded' => false, 'expired' => false, 'error' => true];
         }
 
@@ -225,7 +228,7 @@ class ProfitShareBillDownloadCommand extends Command
      */
     private function handleExpiredTask(ProfitShareBillTask $task, bool $dryRun, int $expireDays): void
     {
-        $createdAtStr = $task->getCreatedAt() !== null ? $task->getCreatedAt()->format('Y-m-d H:i:s') : 'unknown';
+        $createdAtStr = null !== $task->getCreatedAt() ? $task->getCreatedAt()->format('Y-m-d H:i:s') : 'unknown';
         $this->logger->warning('账单任务已过期', [
             'task_id' => $task->getId(),
             'sub_mchid' => $task->getSubMchId(),
@@ -265,6 +268,7 @@ class ProfitShareBillDownloadCommand extends Command
                 'local_path' => $localPath,
                 'file_size' => file_exists($localPath) ? filesize($localPath) : 0,
             ]);
+
             return ['downloaded' => true, 'expired' => false, 'error' => false];
         }
 
@@ -312,8 +316,8 @@ class ProfitShareBillDownloadCommand extends Command
     private function generateLocalPath(string $basePath, ProfitShareBillTask $task): string
     {
         $billDate = $task->getBillDate()->format('Y-m-d');
-        $subMchId = $task->getSubMchId() !== null ? $task->getSubMchId() : 'default';
-        $tarType = $task->getTarType() !== null ? $task->getTarType() : 'plain';
+        $subMchId = null !== $task->getSubMchId() ? $task->getSubMchId() : 'default';
+        $tarType = null !== $task->getTarType() ? $task->getTarType() : 'plain';
 
         // 创建目录结构：basePath/year/month/
         $year = $task->getBillDate()->format('Y');

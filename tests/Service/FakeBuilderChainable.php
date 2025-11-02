@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use WeChatPay\BuilderChainable;
@@ -87,27 +88,27 @@ class FakeBuilderChainable implements BuilderChainable
         throw new \BadMethodCallException('not implemented');
     }
 
-    public function getAsync(array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    public function getAsync(array $options = []): PromiseInterface
     {
         throw new \BadMethodCallException('not implemented');
     }
 
-    public function putAsync(array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    public function putAsync(array $options = []): PromiseInterface
     {
         throw new \BadMethodCallException('not implemented');
     }
 
-    public function postAsync(array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    public function postAsync(array $options = []): PromiseInterface
     {
         throw new \BadMethodCallException('not implemented');
     }
 
-    public function patchAsync(array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    public function patchAsync(array $options = []): PromiseInterface
     {
         throw new \BadMethodCallException('not implemented');
     }
 
-    public function deleteAsync(array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    public function deleteAsync(array $options = []): PromiseInterface
     {
         throw new \BadMethodCallException('not implemented');
     }

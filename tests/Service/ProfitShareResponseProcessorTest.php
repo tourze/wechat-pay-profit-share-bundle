@@ -12,6 +12,9 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareResponseProcessor;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareResponseProcessor::class)]
 class ProfitShareResponseProcessorTest extends TestCase
 {
@@ -34,23 +37,28 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('setState')
-            ->with(ProfitShareOrderState::PROCESSING);
+            ->with(ProfitShareOrderState::PROCESSING)
+        ;
 
         $order->expects($this->once())
             ->method('setTransactionId')
-            ->with('test_transaction_id');
+            ->with('test_transaction_id')
+        ;
 
         $order->expects($this->once())
             ->method('setOrderId')
-            ->with('test_order_id');
+            ->with('test_order_id')
+        ;
 
         $order->expects($this->once())
             ->method('setOutOrderNo')
-            ->with('test_out_order_no');
+            ->with('test_out_order_no')
+        ;
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -64,22 +72,27 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('setState')
-            ->with(ProfitShareOrderState::FINISHED);
+            ->with(ProfitShareOrderState::FINISHED)
+        ;
 
         $order->expects($this->never())
-            ->method('setTransactionId');
+            ->method('setTransactionId')
+        ;
 
         $order->expects($this->once())
             ->method('setOrderId')
-            ->with('');
+            ->with('')
+        ;
 
         $order->expects($this->once())
             ->method('setOutOrderNo')
-            ->with('');
+            ->with('')
+        ;
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -93,11 +106,13 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('setState')
-            ->with(ProfitShareOrderState::CLOSED);
+            ->with(ProfitShareOrderState::CLOSED)
+        ;
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -122,43 +137,53 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('setState')
-            ->with(ProfitShareOrderState::FINISHED);
+            ->with(ProfitShareOrderState::FINISHED)
+        ;
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([$receiver]);
+            ->willReturn([$receiver])
+        ;
 
         $receiver->expects($this->once())
             ->method('getType')
-            ->willReturn('MERCHANT_ID');
+            ->willReturn('MERCHANT_ID')
+        ;
 
         $receiver->expects($this->once())
             ->method('getAccount')
-            ->willReturn('test_account');
+            ->willReturn('test_account')
+        ;
 
         $receiver->expects($this->once())
             ->method('getAmount')
-            ->willReturn(100);
+            ->willReturn(100)
+        ;
 
         $receiver->expects($this->once())
             ->method('setDetail')
-            ->with(json_encode($response['receivers'][0], JSON_UNESCAPED_UNICODE));
+            ->with(json_encode($response['receivers'][0], JSON_UNESCAPED_UNICODE))
+        ;
 
         $receiver->expects($this->once())
             ->method('setResult')
-            ->with(ProfitShareReceiverResult::SUCCESS);
+            ->with(ProfitShareReceiverResult::SUCCESS)
+        ;
 
         $receiver->expects($this->once())
             ->method('setFinishAmount')
-            ->with(100);
+            ->with(100)
+        ;
 
         $order->expects($this->once())
             ->method('setFinishTime')
-            ->with('2023-01-01T12:00:00+08:00');
+            ->with('2023-01-01T12:00:00+08:00')
+        ;
 
         $order->expects($this->once())
             ->method('setSuccessTime')
-            ->with('2023-01-01T12:00:00+08:00');
+            ->with('2023-01-01T12:00:00+08:00')
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -182,30 +207,37 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([$receiver]);
+            ->willReturn([$receiver])
+        ;
 
         $receiver->expects($this->once())
             ->method('getType')
-            ->willReturn('MERCHANT_ID');
+            ->willReturn('MERCHANT_ID')
+        ;
 
         $receiver->expects($this->once())
             ->method('getAccount')
-            ->willReturn('test_account');
+            ->willReturn('test_account')
+        ;
 
         $receiver->expects($this->once())
             ->method('getAmount')
-            ->willReturn(100);
+            ->willReturn(100)
+        ;
 
         $receiver->expects($this->once())
             ->method('setResult')
-            ->with(ProfitShareReceiverResult::FAILED);
+            ->with(ProfitShareReceiverResult::FAILED)
+        ;
 
         $order->expects($this->once())
             ->method('setFinishTime')
-            ->with('2023-01-01T12:00:00+08:00');
+            ->with('2023-01-01T12:00:00+08:00')
+        ;
 
         $order->expects($this->never())
-            ->method('setSuccessTime');
+            ->method('setSuccessTime')
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -225,11 +257,13 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         // Should not process invalid receivers
         $order->expects($this->never())
-            ->method('setFinishTime');
+            ->method('setFinishTime')
+        ;
 
         $this->processor->applyResponse($order, $response);
     }
@@ -241,7 +275,8 @@ class ProfitShareResponseProcessorTest extends TestCase
         // Should handle empty or null response gracefully
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->processor->applyResponse($order, []);
     }
@@ -272,7 +307,8 @@ class ProfitShareResponseProcessorTest extends TestCase
 
         $order->expects($this->once())
             ->method('getReceivers')
-            ->willReturn([$receiver]);
+            ->willReturn([$receiver])
+        ;
 
         $order->expects($this->once())
             ->method('setFinishTime')

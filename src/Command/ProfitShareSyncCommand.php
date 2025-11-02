@@ -171,7 +171,7 @@ class ProfitShareSyncCommand extends Command
         ProfitShareOrder $order,
         \DateTimeImmutable $timeoutThreshold,
         int $timeoutHours,
-        bool $dryRun
+        bool $dryRun,
     ): array {
         $result = ['updated' => 0, 'timeout' => 0, 'error' => 0];
 

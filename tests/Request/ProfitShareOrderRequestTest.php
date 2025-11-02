@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareOrderRequest;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverRequest;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareOrderRequest::class)]
 class ProfitShareOrderRequestTest extends TestCase
 {
@@ -86,6 +89,30 @@ class ProfitShareOrderRequestTest extends TestCase
 
         $payload = $request->toPayload();
         $this->assertTrue($payload['unfreeze_unsplit']);
+    }
+
+    public function testAddReceiver(): void
+    {
+        $request = new ProfitShareOrderRequest(
+            subMchId: '1900000109',
+            transactionId: '4200000452202312011876781234',
+            outOrderNo: 'P20150806125346'
+        );
+
+        $this->assertEmpty($request->getReceivers());
+
+        $receiver = new ProfitShareReceiverRequest(
+            type: 'MERCHANT_ID',
+            account: '1900000109',
+            amount: 100,
+            description: '分账给商户'
+        );
+
+        $request->addReceiver($receiver);
+
+        $receivers = $request->getReceivers();
+        $this->assertCount(1, $receivers);
+        $this->assertSame($receiver, $receivers[0]);
     }
 
     public function testAddAndGetReceivers(): void

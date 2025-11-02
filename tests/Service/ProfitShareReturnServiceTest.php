@@ -7,8 +7,8 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Psr\Log\LoggerInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReturnOrder;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReturnOrderRepository;
@@ -18,6 +18,9 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareReturnService::class)]
 class ProfitShareReturnServiceTest extends AbstractIntegrationTestCase
@@ -25,6 +28,7 @@ class ProfitShareReturnServiceTest extends AbstractIntegrationTestCase
     protected function onSetUp(): void
     {
     }
+
     public function testRequestReturnCreatesEntity(): void
     {
         // 创建Mock依赖
@@ -84,7 +88,8 @@ class ProfitShareReturnServiceTest extends AbstractIntegrationTestCase
         $returnRepository->expects($this->once())
             ->method('findOneBy')
             ->with(['outReturnNo' => 'R20150806125346'])
-            ->willReturn($returnOrder);
+            ->willReturn($returnOrder)
+        ;
         $returnRepository->expects($this->once())->method('save');
 
         $operationRepository = $this->createMock(ProfitShareOperationLogRepository::class);

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Tourze\WechatPayProfitShareBundle\Tests\Command;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
 use Tourze\WechatPayProfitShareBundle\Command\ProfitShareSyncCommand;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
@@ -17,15 +19,22 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOrderRepository;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareService;
 use WechatPayBundle\Entity\Merchant;
 
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareSyncCommand::class)]
 class ProfitShareSyncCommandTest extends AbstractCommandTestCase
 {
     private CommandTester $commandTester;
+
+    /** @phpstan-var MockObject&ProfitShareOrderRepository */
     private ProfitShareOrderRepository $orderRepository;
+
+    /** @phpstan-var MockObject&ProfitShareService */
     private ProfitShareService $profitShareService;
+
+    /** @phpstan-var MockObject&LoggerInterface */
     private LoggerInterface $logger;
 
     public function testExecuteWithNoOrders(): void
@@ -33,7 +42,8 @@ class ProfitShareSyncCommandTest extends AbstractCommandTestCase
         $this->orderRepository->expects($this->once())
             ->method('findBy')
             ->with(['state' => ProfitShareOrderState::PROCESSING])
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $this->commandTester->execute([]);
 
@@ -50,10 +60,12 @@ class ProfitShareSyncCommandTest extends AbstractCommandTestCase
         $this->orderRepository->expects($this->once())
             ->method('findBy')
             ->with(['state' => ProfitShareOrderState::PROCESSING])
-            ->willReturn([$order]);
+            ->willReturn([$order])
+        ;
 
         $this->profitShareService->expects($this->never())
-            ->method('queryProfitShareOrder');
+            ->method('queryProfitShareOrder')
+        ;
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -62,17 +74,25 @@ class ProfitShareSyncCommandTest extends AbstractCommandTestCase
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
+    /**
+     * @return MockObject&ProfitShareOrder
+     */
     private function createMockOrder(): ProfitShareOrder
     {
+        /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order = $this->createMock(ProfitShareOrder::class);
-        $order->method('getId')->willReturn('1');
+
         return $order;
     }
 
+    /**
+     * @return MockObject&Merchant
+     */
     private function createMockMerchant(): Merchant
     {
+        /** @phpstan-var MockObject&Merchant $merchant */
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('getId')->willReturn('1');
+
         return $merchant;
     }
 
@@ -104,10 +124,12 @@ class ProfitShareSyncCommandTest extends AbstractCommandTestCase
         $this->orderRepository->expects($this->once())
             ->method('findBy')
             ->with(['state' => ProfitShareOrderState::PROCESSING])
-            ->willReturn([$order]);
+            ->willReturn([$order])
+        ;
 
         $this->profitShareService->expects($this->never())
-            ->method('queryProfitShareOrder');
+            ->method('queryProfitShareOrder')
+        ;
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -123,10 +145,12 @@ class ProfitShareSyncCommandTest extends AbstractCommandTestCase
         $this->orderRepository->expects($this->once())
             ->method('findBy')
             ->with(['state' => ProfitShareOrderState::PROCESSING])
-            ->willReturn([$order]);
+            ->willReturn([$order])
+        ;
 
         $this->profitShareService->expects($this->never())
-            ->method('queryProfitShareOrder');
+            ->method('queryProfitShareOrder')
+        ;
 
         $this->commandTester->execute(['--timeout-hours' => 48, '--dry-run' => true]);
 

@@ -217,7 +217,7 @@ class ProfitShareReturnService
         ?string $errorCode,
         ?string $errorMessage,
         array $request,
-        $response
+        $response,
     ): void {
         $log = new ProfitShareOperationLog();
         $log->setMerchant($merchant);
@@ -245,7 +245,7 @@ class ProfitShareReturnService
         string $subMchId,
         string $outReturnNo,
         ?string $outOrderNo = null,
-        ?string $orderId = null
+        ?string $orderId = null,
     ): ProfitShareReturnOrder {
         if (null === $outOrderNo && null === $orderId) {
             throw new \InvalidArgumentException('商户分账单号和微信分账单号不能同时为空');

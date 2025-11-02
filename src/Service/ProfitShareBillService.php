@@ -151,7 +151,7 @@ class ProfitShareBillService
         ?string $errorCode,
         ?string $errorMessage,
         array $request,
-        $response
+        $response,
     ): void {
         $log = new ProfitShareOperationLog();
         $log->setMerchant($merchant);
@@ -176,7 +176,7 @@ class ProfitShareBillService
     public function downloadBill(
         Merchant $merchant,
         ProfitShareBillTask $task,
-        ProfitShareBillDownloadRequest $request
+        ProfitShareBillDownloadRequest $request,
     ): ProfitShareBillTask {
         $downloadUrl = $this->resolveDownloadUrl($request, $task);
         $localPath = $this->validateLocalPath($request);
@@ -204,9 +204,9 @@ class ProfitShareBillService
 
     private function resolveDownloadUrl(
         ProfitShareBillDownloadRequest $request,
-        ProfitShareBillTask $task
+        ProfitShareBillTask $task,
     ): string {
-        $downloadUrl = $request->getDownloadUrl() !== null && $request->getDownloadUrl() !== ''
+        $downloadUrl = null !== $request->getDownloadUrl() && '' !== $request->getDownloadUrl()
             ? $request->getDownloadUrl()
             : $task->getDownloadUrl();
 
@@ -223,6 +223,7 @@ class ProfitShareBillService
         if (null === $localPath) {
             throw new \InvalidArgumentException('本地保存路径不能为空');
         }
+
         return $localPath;
     }
 
@@ -243,7 +244,7 @@ class ProfitShareBillService
     private function maybeDecodeGzip(
         string $contents,
         ProfitShareBillDownloadRequest $request,
-        ProfitShareBillTask $task
+        ProfitShareBillTask $task,
     ): string {
         $tarType = $request->getTarType() ?? $task->getTarType();
         if (null !== $tarType && 'GZIP' === strtoupper($tarType)) {
@@ -251,8 +252,10 @@ class ProfitShareBillService
             if (false === $decoded) {
                 throw new \RuntimeException('账单文件解压失败');
             }
+
             return $decoded;
         }
+
         return $contents;
     }
 
@@ -266,7 +269,7 @@ class ProfitShareBillService
      */
     private function resolveHashExpectation(
         ProfitShareBillDownloadRequest $request,
-        ProfitShareBillTask $task
+        ProfitShareBillTask $task,
     ): array {
         return [
             'type' => $request->getExpectedHashType() ?? $task->getHashType(),
@@ -277,7 +280,7 @@ class ProfitShareBillService
     private function verifyDownloadedHash(
         string $contents,
         ProfitShareBillDownloadRequest $request,
-        ProfitShareBillTask $task
+        ProfitShareBillTask $task,
     ): void {
         [$expectedHashType, $expectedHashValue] = array_values($this->resolveHashExpectation($request, $task));
 
@@ -291,7 +294,7 @@ class ProfitShareBillService
         ProfitShareBillTask $task,
         string $downloadUrl,
         string $localPath,
-        float $startTime
+        float $startTime,
     ): ProfitShareBillTask {
         $task->setStatus(ProfitShareBillStatus::DOWNLOADED);
         $task->setDownloadedAt(new \DateTimeImmutable());
@@ -330,7 +333,7 @@ class ProfitShareBillService
         string $downloadUrl,
         string $localPath,
         \Throwable $exception,
-        float $startTime
+        float $startTime,
     ): void {
         $this->logger->error('下载分账账单失败', [
             'download_url' => $downloadUrl,
@@ -374,7 +377,7 @@ class ProfitShareBillService
     private function dumpToFile(string $path, string $content): void
     {
         $directory = \dirname($path);
-        if (!is_dir($directory) && !@mkdir($directory, 0777, true) && !is_dir($directory)) {
+        if (!is_dir($directory) && !@mkdir($directory, 0o777, true) && !is_dir($directory)) {
             throw new \RuntimeException(sprintf('无法创建目录：%s', $directory));
         }
 

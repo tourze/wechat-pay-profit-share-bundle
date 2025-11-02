@@ -52,21 +52,21 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
                     'type' => 'MERCHANT_ID',
                     'account' => '1900000109',
                     'amount' => 100,
-                    'description' => '分给商户'
-                ]
-            ]
+                    'description' => '分给商户',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $operationLogOrderSuccess->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
             'transaction_id' => '4200000452202401158754321234',
             'order_id' => '3008450740201411110007820472',
             'out_order_no' => 'P202401150001',
-            'state' => 'PROCESSING'
+            'state' => 'PROCESSING',
         ], JSON_THROW_ON_ERROR));
         $operationLogOrderSuccess->setMetadata([
             'request_id' => 'req-20240115-001',
             'processing_time' => 0.245,
-            'api_version' => 'v3'
+            'api_version' => 'v3',
         ]);
         $manager->persist($operationLogOrderSuccess);
         $this->addReference(self::OPERATION_LOG_ORDER_SUCCESS_REFERENCE, $operationLogOrderSuccess);
@@ -82,17 +82,17 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
             'receiver' => [
                 'type' => 'PERSONAL_OPENID',
                 'account' => 'oxRHG5p6J9nW1z2y3x4w5v6u7t8',
-                'relation_type' => 'DISTRIBUTOR'
-            ]
+                'relation_type' => 'DISTRIBUTOR',
+            ],
         ], JSON_THROW_ON_ERROR));
         $operationLogReceiverAdd->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
-            'result_code' => 'SUCCESS'
+            'result_code' => 'SUCCESS',
         ], JSON_THROW_ON_ERROR));
         $operationLogReceiverAdd->setMetadata([
             'request_id' => 'req-20240115-002',
             'processing_time' => 0.156,
-            'receiver_type' => 'PERSONAL_OPENID'
+            'receiver_type' => 'PERSONAL_OPENID',
         ]);
         $manager->persist($operationLogReceiverAdd);
         $this->addReference(self::OPERATION_LOG_RECEIVER_ADD_SUCCESS_REFERENCE, $operationLogReceiverAdd);
@@ -106,17 +106,17 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
         $operationLogBillApply->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
             'bill_date' => '20240114',
-            'tar_type' => 'GZIP'
+            'tar_type' => 'GZIP',
         ], JSON_THROW_ON_ERROR));
         $operationLogBillApply->setResponsePayload(json_encode([
             'hash_type' => 'SHA1',
             'hash_value' => 'e1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0',
-            'download_url' => 'https://api.mch.weixin.qq.com/v3/profitsharing/bills?file_token=xxxxx'
+            'download_url' => 'https://api.mch.weixin.qq.com/v3/profitsharing/bills?file_token=xxxxx',
         ], JSON_THROW_ON_ERROR));
         $operationLogBillApply->setMetadata([
             'request_id' => 'req-20240115-003',
             'processing_time' => 1.234,
-            'bill_date' => '20240114'
+            'bill_date' => '20240114',
         ]);
         $manager->persist($operationLogBillApply);
         $this->addReference(self::OPERATION_LOG_BILL_APPLY_SUCCESS_REFERENCE, $operationLogBillApply);
@@ -138,19 +138,19 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
                     'type' => 'MERCHANT_ID',
                     'account' => '1900000109',
                     'amount' => 200,
-                    'description' => '分给商户'
-                ]
-            ]
+                    'description' => '分给商户',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $operationLogOrderFailed->setResponsePayload(json_encode([
             'code' => 'INVALID_REQUEST',
-            'message' => '分账订单不存在'
+            'message' => '分账订单不存在',
         ], JSON_THROW_ON_ERROR));
         $operationLogOrderFailed->setMetadata([
             'request_id' => 'req-20240115-004',
             'processing_time' => 0.089,
             'error_category' => 'business_error',
-            'retryable' => false
+            'retryable' => false,
         ]);
         $manager->persist($operationLogOrderFailed);
         $this->addReference(self::OPERATION_LOG_ORDER_FAILED_REFERENCE, $operationLogOrderFailed);
@@ -163,7 +163,7 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
         $operationLogQuery->setSuccess(true);
         $operationLogQuery->setRequestPayload(json_encode([
             'sub_mch_id' => '1900000109',
-            'transaction_id' => '4200000452202401158754321234'
+            'transaction_id' => '4200000452202401158754321234',
         ], JSON_THROW_ON_ERROR));
         $operationLogQuery->setResponsePayload(json_encode([
             'sub_mch_id' => '1900000109',
@@ -177,14 +177,14 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
                     'account' => '1900000109',
                     'amount' => 100,
                     'description' => '分给商户',
-                    'result' => 'SUCCESS'
-                ]
-            ]
+                    'result' => 'SUCCESS',
+                ],
+            ],
         ], JSON_THROW_ON_ERROR));
         $operationLogQuery->setMetadata([
             'request_id' => 'req-20240115-005',
             'processing_time' => 0.167,
-            'order_state' => 'FINISHED'
+            'order_state' => 'FINISHED',
         ]);
         $manager->persist($operationLogQuery);
 
@@ -202,17 +202,17 @@ class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInt
                 'algorithm' => 'AEAD_AES_256_GCM',
                 'ciphertext' => '...',
                 'associated_data' => 'profitsharing',
-                'nonce' => '...'
-            ]
+                'nonce' => '...',
+            ],
         ], JSON_THROW_ON_ERROR));
         $operationLogNotification->setResponsePayload(json_encode([
             'code' => 'SUCCESS',
-            'message' => '成功'
+            'message' => '成功',
         ], JSON_THROW_ON_ERROR));
         $operationLogNotification->setMetadata([
             'notification_id' => 'notif-20240115-001',
             'event_type' => 'TRANSACTION.PROFITSHARING.FINISH',
-            'processing_time' => 0.034
+            'processing_time' => 0.034,
         ]);
         $manager->persist($operationLogNotification);
 

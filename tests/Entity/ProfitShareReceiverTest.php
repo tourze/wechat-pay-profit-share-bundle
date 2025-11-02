@@ -12,6 +12,9 @@ use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareReceiver::class)]
 class ProfitShareReceiverTest extends AbstractEntityTestCase
 {
@@ -29,7 +32,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testEntityInitialization(): void
     {
-                $this->assertInstanceOf(ProfitShareReceiver::class, $this->profitShareReceiver);
+        $this->assertInstanceOf(ProfitShareReceiver::class, $this->profitShareReceiver);
         $this->assertNull($this->profitShareReceiver->getId());
         $this->assertNull($this->profitShareReceiver->getOrder());
         $this->assertEquals(0, $this->profitShareReceiver->getSequence());
@@ -47,7 +50,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testOrderGetterSetter(): void
     {
-                $order = $this->createMock(ProfitShareOrder::class);
+        $order = $this->createMock(ProfitShareOrder::class);
 
         $this->assertNull($this->profitShareReceiver->getOrder());
 
@@ -61,7 +64,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
     #[DataProvider('sequenceProvider')]
     public function testSequenceGetterSetter(int $sequence): void
     {
-                $this->profitShareReceiver->setSequence($sequence);
+        $this->profitShareReceiver->setSequence($sequence);
         $this->assertEquals($sequence, $this->profitShareReceiver->getSequence());
     }
 
@@ -160,7 +163,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
     #[DataProvider('amountProvider')]
     public function testAmountGetterSetter(int $amount): void
     {
-                $this->profitShareReceiver->setAmount($amount);
+        $this->profitShareReceiver->setAmount($amount);
         $this->assertEquals($amount, $this->profitShareReceiver->getAmount());
     }
 
@@ -180,7 +183,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testResultGetterSetter(): void
     {
-                $this->assertEquals(ProfitShareReceiverResult::PENDING, $this->profitShareReceiver->getResult());
+        $this->assertEquals(ProfitShareReceiverResult::PENDING, $this->profitShareReceiver->getResult());
 
         foreach (ProfitShareReceiverResult::cases() as $result) {
             $this->profitShareReceiver->setResult($result);
@@ -221,7 +224,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
     #[DataProvider('retryCountProvider')]
     public function testRetryCountGetterSetter(int $retryCount): void
     {
-                $this->profitShareReceiver->setRetryCount($retryCount);
+        $this->profitShareReceiver->setRetryCount($retryCount);
         $this->assertEquals($retryCount, $this->profitShareReceiver->getRetryCount());
     }
 
@@ -267,7 +270,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
     #[DataProvider('metadataProvider')]
     public function testMetadataGetterSetter(?array $metadata): void
     {
-                $this->profitShareReceiver->setMetadata($metadata);
+        $this->profitShareReceiver->setMetadata($metadata);
         $this->assertEquals($metadata, $this->profitShareReceiver->getMetadata());
     }
 
@@ -288,7 +291,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testTimestampGetters(): void
     {
-                // 测试初始状态
+        // 测试初始状态
         $this->assertNull($this->profitShareReceiver->getCreatedAt());
         $this->assertNull($this->profitShareReceiver->getUpdatedAt());
 
@@ -299,7 +302,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-                $this->assertEmpty((string) $this->profitShareReceiver);
+        $this->assertEmpty((string) $this->profitShareReceiver);
 
         $this->profitShareReceiver->setAccount('1900000109');
         $this->assertEquals('1900000109', (string) $this->profitShareReceiver);
@@ -307,13 +310,13 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testStringableImplementation(): void
     {
-                $this->assertInstanceOf(\Stringable::class, $this->profitShareReceiver);
+        $this->assertInstanceOf(\Stringable::class, $this->profitShareReceiver);
         $this->assertIsString((string) $this->profitShareReceiver);
     }
 
     public function testSuccessfulReceiverWorkflow(): void
     {
-                // 模拟成功的接收方工作流程
+        // 模拟成功的接收方工作流程
         $order = $this->createMock(ProfitShareOrder::class);
 
         $this->profitShareReceiver->setOrder($order);
@@ -342,7 +345,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testFailedReceiverWorkflow(): void
     {
-                // 模拟失败的接收方工作流程
+        // 模拟失败的接收方工作流程
         $order = $this->createMock(ProfitShareOrder::class);
 
         $this->profitShareReceiver->setOrder($order);
@@ -369,7 +372,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testRetryMechanism(): void
     {
-                // 模拟重试机制
+        // 模拟重试机制
         $order = $this->createMock(ProfitShareOrder::class);
 
         $this->profitShareReceiver->setOrder($order);
@@ -414,7 +417,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testReceiverTypes(): void
     {
-                $receiverTypes = [
+        $receiverTypes = [
             'MERCHANT_ID' => '商户号',
             'PERSONAL_OPENID' => '个人openid',
             'PERSONAL_SUB_OPENID' => '个人sub_openid',
@@ -429,7 +432,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testAllResultStates(): void
     {
-                $results = [
+        $results = [
             [ProfitShareReceiverResult::PENDING, '待处理'],
             [ProfitShareReceiverResult::SUCCESS, '成功'],
             [ProfitShareReceiverResult::CLOSED, '已关闭'],
@@ -445,7 +448,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 
     public function testComplexReceiverScenario(): void
     {
-                // 模拟一个复杂的接收方场景
+        // 模拟一个复杂的接收方场景
         $order = $this->createMock(ProfitShareOrder::class);
 
         // 创建商户接收方
@@ -499,7 +502,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
      */
     private function assertIsNullable(mixed $value, string $expectedType): void
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertTrue(true);
         } else {
             $this->assertInstanceOf($expectedType, $value);

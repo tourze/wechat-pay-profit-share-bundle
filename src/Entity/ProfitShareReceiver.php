@@ -16,7 +16,6 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReceiverRepository;
 /**
  * @see https://pay.weixin.qq.com/doc/v3/partner/4012466868
  */
-
 #[ORM\Entity(repositoryClass: ProfitShareReceiverRepository::class)]
 #[ORM\Table(name: 'wechat_pay_profit_share_receiver', options: ['comment' => '微信支付分账接收方'])]
 class ProfitShareReceiver implements \Stringable

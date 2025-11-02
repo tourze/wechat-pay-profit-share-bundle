@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOperationLog;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOperationType;
@@ -12,10 +13,15 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogReposito
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareOperationLogger;
 use WechatPayBundle\Entity\Merchant;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareOperationLogger::class)]
 class ProfitShareOperationLoggerTest extends TestCase
 {
     private ProfitShareOperationLogger $logger;
+
+    /** @phpstan-var MockObject&ProfitShareOperationLogRepository */
     private ProfitShareOperationLogRepository $repository;
 
     protected function setUp(): void
@@ -46,7 +52,8 @@ class ProfitShareOperationLoggerTest extends TestCase
                     && $log->getErrorMessage() === $errorMessage
                     && $log->getRequestPayload() === json_encode($request)
                     && $log->getResponsePayload() === json_encode($response);
-            }));
+            }))
+        ;
 
         $this->logger->logOperation($merchant, $subMchId, $type, $success, $errorCode, $errorMessage, $request, $response);
     }
@@ -73,7 +80,8 @@ class ProfitShareOperationLoggerTest extends TestCase
                     && $log->getErrorMessage() === $errorMessage
                     && $log->getRequestPayload() === $request
                     && $log->getResponsePayload() === $response;
-            }));
+            }))
+        ;
 
         $this->logger->logOperation($merchant, $subMchId, $type, $success, $errorCode, $errorMessage, $request, $response);
     }
@@ -100,7 +108,8 @@ class ProfitShareOperationLoggerTest extends TestCase
                     && $log->getErrorMessage() === $errorMessage
                     && $log->getRequestPayload() === $request
                     && $log->getResponsePayload() === $response;
-            }));
+            }))
+        ;
 
         $this->logger->logOperation($merchant, $subMchId, $type, $success, $errorCode, $errorMessage, $request, $response);
     }

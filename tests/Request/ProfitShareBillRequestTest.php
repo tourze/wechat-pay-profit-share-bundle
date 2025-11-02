@@ -9,12 +9,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareBillRequest;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareBillRequest::class)]
 class ProfitShareBillRequestTest extends TestCase
 {
     public function testCreateRequestWithBillDateOnly(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $request = new ProfitShareBillRequest($billDate);
 
         $this->assertSame($billDate, $request->getBillDate());
@@ -30,7 +33,7 @@ class ProfitShareBillRequestTest extends TestCase
 
     public function testCreateRequestWithSubMchId(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $request = new ProfitShareBillRequest(
             billDate: $billDate,
             subMchId: '1900000109'
@@ -50,7 +53,7 @@ class ProfitShareBillRequestTest extends TestCase
 
     public function testCreateRequestWithTarType(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $request = new ProfitShareBillRequest(
             billDate: $billDate,
             tarType: 'gzip'
@@ -70,7 +73,7 @@ class ProfitShareBillRequestTest extends TestCase
 
     public function testCreateRequestWithAllFields(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $request = new ProfitShareBillRequest(
             billDate: $billDate,
             subMchId: '1900000109',
@@ -92,7 +95,7 @@ class ProfitShareBillRequestTest extends TestCase
 
     public function testToQueryExcludesEmptyOptionalFields(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $request = new ProfitShareBillRequest(
             billDate: $billDate,
             subMchId: '',
@@ -119,17 +122,17 @@ class ProfitShareBillRequestTest extends TestCase
         ];
 
         foreach ($testCases as [$inputDate, $expectedFormat]) {
-            $billDate = new DateTime($inputDate);
+            $billDate = new \DateTime($inputDate);
             $request = new ProfitShareBillRequest($billDate);
             $query = $request->toQuery();
 
-            $this->assertSame($expectedFormat, $query['bill_date'], "Failed for date: $inputDate");
+            $this->assertSame($expectedFormat, $query['bill_date'], "Failed for date: {$inputDate}");
         }
     }
 
     public function testToQueryWithDateTimeInterface(): void
     {
-        $billDate = new DateTime('2023-12-01 15:30:45');
+        $billDate = new \DateTime('2023-12-01 15:30:45');
         $request = new ProfitShareBillRequest($billDate);
 
         $query = $request->toQuery();
@@ -138,7 +141,7 @@ class ProfitShareBillRequestTest extends TestCase
 
     public function testDifferentTarTypes(): void
     {
-        $billDate = new DateTime('2023-12-01');
+        $billDate = new \DateTime('2023-12-01');
         $tarTypes = ['gzip', 'plain', 'compress'];
 
         foreach ($tarTypes as $tarType) {
@@ -149,7 +152,7 @@ class ProfitShareBillRequestTest extends TestCase
 
             $query = $request->toQuery();
             $this->assertArrayHasKey('tar_type', $query);
-            $this->assertSame($tarType, $query['tar_type'], "Failed for tar_type: $tarType");
+            $this->assertSame($tarType, $query['tar_type'], "Failed for tar_type: {$tarType}");
         }
     }
 }

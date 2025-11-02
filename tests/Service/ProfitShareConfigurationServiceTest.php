@@ -7,14 +7,17 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Psr\Log\LoggerInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareConfigurationService;
 use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareConfigurationService::class)]
 class ProfitShareConfigurationServiceTest extends AbstractIntegrationTestCase
@@ -22,6 +25,7 @@ class ProfitShareConfigurationServiceTest extends AbstractIntegrationTestCase
     protected function onSetUp(): void
     {
     }
+
     public function testQueryRemainingAmount(): void
     {
         // 创建Mock依赖

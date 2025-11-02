@@ -4,20 +4,31 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
+use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Constraint\IsAnything;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareApiExecutor;
 use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareApiExecutor::class)]
 class ProfitShareApiExecutorTest extends TestCase
 {
     private ProfitShareApiExecutor $executor;
+
+    /** @phpstan-var MockObject&WechatPayBuilder */
     private WechatPayBuilder $wechatPayBuilder;
+
+    /** @phpstan-var MockObject&LoggerInterface */
     private LoggerInterface $logger;
 
     protected function setUp(): void
@@ -35,25 +46,27 @@ class ProfitShareApiExecutorTest extends TestCase
         $expectedResponse = ['result' => 'success'];
 
         $httpClient = $this->createMock(\Psr\Http\Client\ClientInterface::class);
-        $response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
-        $body = $this->createMock(\Psr\Http\Message\StreamInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $body = $this->createMock(StreamInterface::class);
 
         $body->method('getContents')->willReturn(json_encode($expectedResponse));
         $response->method('getBody')->willReturn($body);
 
-        $requestBuilder = $this->createMock(\GuzzleHttp\ClientInterface::class);
+        $requestBuilder = $this->createMock(ClientInterface::class);
         $requestBuilder->method('post')->willReturn($response);
 
-        $chainBuilder = $this->createMock(\GuzzleHttp\ClientInterface::class);
+        $chainBuilder = $this->createMock(ClientInterface::class);
         $chainBuilder->method('chain')->with($segment)->willReturnSelf();
         $chainBuilder->method('post')->willReturn($response);
 
         $this->wechatPayBuilder->method('genBuilder')
             ->with($merchant)
-            ->willReturn($chainBuilder);
+            ->willReturn($chainBuilder)
+        ;
 
         $this->logger->expects($this->exactly(2))
-            ->method('info');
+            ->method('info')
+        ;
 
         $result = $this->executor->executeRequest($merchant, $segment, $payload);
 
@@ -68,18 +81,21 @@ class ProfitShareApiExecutorTest extends TestCase
         $exception = new \RuntimeException('Request failed');
 
         $this->logger->expects($this->once())
-            ->method('info');
+            ->method('info')
+        ;
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
                 '微信分账请求失败',
                 new IsAnything()
-            );
+            )
+        ;
 
         $this->wechatPayBuilder->method('genBuilder')
             ->with($merchant)
-            ->willThrowException($exception);
+            ->willThrowException($exception)
+        ;
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Request failed');
@@ -94,9 +110,9 @@ class ProfitShareApiExecutorTest extends TestCase
         $query = ['order_id' => '123'];
         $expectedResponse = ['status' => 'completed'];
 
-        $chainBuilder = $this->createMock(\GuzzleHttp\ClientInterface::class);
-        $response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
-        $body = $this->createMock(\Psr\Http\Message\StreamInterface::class);
+        $chainBuilder = $this->createMock(ClientInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $body = $this->createMock(StreamInterface::class);
 
         $body->method('getContents')->willReturn(json_encode($expectedResponse));
         $response->method('getBody')->willReturn($body);
@@ -106,10 +122,12 @@ class ProfitShareApiExecutorTest extends TestCase
 
         $this->wechatPayBuilder->method('genBuilder')
             ->with($merchant)
-            ->willReturn($chainBuilder);
+            ->willReturn($chainBuilder)
+        ;
 
         $this->logger->expects($this->exactly(2))
-            ->method('info');
+            ->method('info')
+        ;
 
         $result = $this->executor->executeQuery($merchant, $segment, $query);
 
@@ -124,18 +142,21 @@ class ProfitShareApiExecutorTest extends TestCase
         $exception = new \RuntimeException('Query failed');
 
         $this->logger->expects($this->once())
-            ->method('info');
+            ->method('info')
+        ;
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
                 '微信分账查询失败',
                 new IsAnything()
-            );
+            )
+        ;
 
         $this->wechatPayBuilder->method('genBuilder')
             ->with($merchant)
-            ->willThrowException($exception);
+            ->willThrowException($exception)
+        ;
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Query failed');

@@ -7,8 +7,8 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Psr\Log\LoggerInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverAddRequest;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverDeleteRequest;
@@ -17,6 +17,9 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+/**
+ * @internal
+ */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareReceiverService::class)]
 class ProfitShareReceiverServiceTest extends AbstractIntegrationTestCase
@@ -24,6 +27,7 @@ class ProfitShareReceiverServiceTest extends AbstractIntegrationTestCase
     protected function onSetUp(): void
     {
     }
+
     public function testAddReceiverSendsEncryptedName(): void
     {
         // 创建Mock依赖
@@ -44,10 +48,12 @@ class ProfitShareReceiverServiceTest extends AbstractIntegrationTestCase
         $builderFactory->expects($this->once())->method('genBuilder')->willReturn($builder);
         $builderFactory->expects($this->once())
             ->method('getPlatformPublicKey')
-            ->willReturn($keys['public']);
+            ->willReturn($keys['public'])
+        ;
         $builderFactory->expects($this->once())
             ->method('getPlatformCertificateSerial')
-            ->willReturn('SERIAL123');
+            ->willReturn('SERIAL123')
+        ;
 
         // 将Mock依赖注入到容器中
         self::getContainer()->set(ProfitShareOperationLogRepository::class, $operationRepository);
@@ -97,7 +103,7 @@ class ProfitShareReceiverServiceTest extends AbstractIntegrationTestCase
         }
 
         $details = openssl_pkey_get_details($resource);
-        if ($details === false) {
+        if (false === $details) {
             throw new \RuntimeException('Failed to get key details');
         }
         /** @var array<string, mixed> $details */

@@ -7,20 +7,24 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Repository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
+use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareBillTask;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareBillTaskRepository;
 
+/**
+ * @internal
+ */
 #[CoversClass(ProfitShareBillTaskRepository::class)]
 #[RunTestsInSeparateProcesses]
 class ProfitShareBillTaskRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {
-        return new \Tourze\WechatPayProfitShareBundle\Entity\ProfitShareBillTask();
+        return new ProfitShareBillTask();
     }
 
-    protected function getRepository(): \Tourze\WechatPayProfitShareBundle\Repository\ProfitShareBillTaskRepository
+    protected function getRepository(): ProfitShareBillTaskRepository
     {
-        return self::getService(\Tourze\WechatPayProfitShareBundle\Repository\ProfitShareBillTaskRepository::class);
+        return self::getService(ProfitShareBillTaskRepository::class);
     }
 
     protected function onSetUp(): void

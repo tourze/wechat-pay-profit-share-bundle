@@ -54,7 +54,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'receiver_name' => '测试商户',
             'original_amount' => 100,
             'fee_amount' => 0,
-            'actual_amount' => 100
+            'actual_amount' => 100,
         ]);
         $manager->persist($receiverPending);
         $this->addReference(self::RECEIVER_PENDING_REFERENCE, $receiverPending);
@@ -80,7 +80,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'fee_amount' => 0,
             'actual_amount' => 500,
             'settlement_time' => '2024-01-14 09:15:15',
-            'settlement_amount' => 500
+            'settlement_amount' => 500,
         ]);
         $manager->persist($receiverSuccessMerchant);
         $this->addReference(self::RECEIVER_SUCCESS_REFERENCE, $receiverSuccessMerchant);
@@ -106,7 +106,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'fee_amount' => 1,
             'actual_amount' => 199,
             'settlement_time' => '2024-01-14 09:15:30',
-            'settlement_amount' => 199
+            'settlement_amount' => 199,
         ]);
         $manager->persist($receiverSuccessPersonal);
 
@@ -130,7 +130,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'error_code' => 'ACCOUNT_NOT_EXIST',
             'error_message' => '分账接收方账户不存在',
             'first_failed_at' => '2024-01-15 10:30:25',
-            'last_failed_at' => '2024-01-15 11:00:25'
+            'last_failed_at' => '2024-01-15 11:00:25',
         ]);
         $manager->persist($receiverFailed);
         $this->addReference(self::RECEIVER_FAILED_REFERENCE, $receiverFailed);
@@ -155,7 +155,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'error_code' => 'SYSTEM_ERROR',
             'error_message' => '系统繁忙，请稍后再试',
             'first_failed_at' => '2024-01-15 10:35:00',
-            'retry_interval' => 1800
+            'retry_interval' => 1800,
         ]);
         $manager->persist($receiverRetry);
         $this->addReference(self::RECEIVER_RETRY_REFERENCE, $receiverRetry);
@@ -178,7 +178,7 @@ class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterfa
             'receiver_name' => '王五',
             'original_amount' => 120,
             'close_reason' => '分账订单已关闭',
-            'close_time' => '2024-01-15 10:45:00'
+            'close_time' => '2024-01-15 10:45:00',
         ]);
         $manager->persist($receiverClosed);
 
