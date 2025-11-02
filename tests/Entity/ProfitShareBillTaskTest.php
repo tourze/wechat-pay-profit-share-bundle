@@ -289,6 +289,27 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
     }
 
     /**
+     * @return array<int, array{0: string, 1: mixed}>
+     */
+    public static function propertiesProvider(): array
+    {
+        return [
+            ['subMchId', '1234567890'],
+            ['billDate', new \DateTimeImmutable('2024-01-01')],
+            ['tarType', 'gzip'],
+            ['hashType', 'md5'],
+            ['hashValue', 'd41d8cd98f00b204e9800998ecf8427e'],
+            ['downloadUrl', 'https://example.com/download'],
+            ['status', ProfitShareBillStatus::READY],
+            ['downloadedAt', new \DateTimeImmutable('2024-01-01 12:00:00')],
+            ['localPath', '/tmp/bill.gz'],
+            ['requestPayload', '{"test": "data"}'],
+            ['responsePayload', '{"result": "success"}'],
+            ['metadata', ['key' => 'value']],
+        ];
+    }
+
+    /**
      * @param class-string $expectedType
      */
     private function assertIsNullable(mixed $value, string $expectedType): void

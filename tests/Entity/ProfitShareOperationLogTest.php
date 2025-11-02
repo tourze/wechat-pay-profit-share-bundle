@@ -336,6 +336,23 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
     }
 
     /**
+     * @return array<int, array{0: string, 1: mixed}>
+     */
+    public static function propertiesProvider(): array
+    {
+        return [
+            ['subMchId', '1234567890'],
+            ['type', ProfitShareOperationType::REQUEST_ORDER],
+            ['success', true],
+            ['errorCode', 'SYSTEM_ERROR'],
+            ['errorMessage', '系统繁忙'],
+            ['requestPayload', '{"test": "data"}'],
+            ['responsePayload', '{"result": "success"}'],
+            ['metadata', ['key' => 'value']],
+        ];
+    }
+
+    /**
      * @param class-string $expectedType
      */
     private function assertIsNullable(mixed $value, string $expectedType): void

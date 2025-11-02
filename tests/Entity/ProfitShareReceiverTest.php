@@ -20,6 +20,12 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
 {
     private ProfitShareReceiver $profitShareReceiver;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->onSetUp();
+    }
+
     protected function onSetUp(): void
     {
         $this->profitShareReceiver = new ProfitShareReceiver();
@@ -495,6 +501,32 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
         $this->assertEquals(2, $personalReceiver->getRetryCount());
         $this->assertFalse($personalReceiver->isFinallyFailed());
         $this->assertNotNull($personalReceiver->getMetadata());
+    }
+
+    /**
+     * @return iterable<array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
+    {
+        return [
+            ['sequence', 5],
+            ['type', 'MERCHANT_ID'],
+            ['account', '1900000109'],
+            ['name', '测试商户'],
+            ['amount', 5000],
+            ['description', '分账给商户'],
+            ['result', ProfitShareReceiverResult::SUCCESS],
+            ['failReason', '余额不足'],
+            ['wechatCreatedAt', new \DateTimeImmutable('2024-01-01 12:00:00')],
+            ['wechatFinishedAt', new \DateTimeImmutable('2024-01-01 12:05:00')],
+            ['detailId', 'WX_DETAIL123456789'],
+            ['retryCount', 3],
+            ['nextRetryAt', new \DateTimeImmutable('2024-01-01 13:00:00')],
+            ['finallyFailed', true],
+            ['metadata', ['key' => 'value']],
+            ['detail', 'receiver detail'],
+            ['finishAmount', 5000],
+        ];
     }
 
     /**

@@ -446,6 +446,30 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
     }
 
     /**
+     * @return array<int, array{0: string, 1: mixed}>
+     */
+    public static function propertiesProvider(): array
+    {
+        return [
+            ['subMchId', '1234567890123456789'],
+            ['appId', 'wx1234567890abcdef'],
+            ['subAppId', 'wx1234567890fedcba'],
+            ['transactionId', 'wx1234567890123456789'],
+            ['outOrderNo', 'ORDER1234567890123456'],
+            ['orderId', 'WX_ORDER123456789'],
+            ['state', ProfitShareOrderState::PROCESSING],
+            ['unfreezeUnsplit', true],
+            ['requestPayload', '{"test": "data"}'],
+            ['responsePayload', '{"result": "success"}'],
+            ['wechatCreatedAt', new \DateTimeImmutable('2024-01-01 12:00:00')],
+            ['wechatFinishedAt', new \DateTimeImmutable('2024-01-01 13:00:00')],
+            ['metadata', ['key' => 'value']],
+            ['finishTime', '2024-01-01T13:00:00+08:00'],
+            ['successTime', '2024-01-01T13:00:00+08:00'],
+        ];
+    }
+
+    /**
      * @param class-string $expectedType
      */
     private function assertIsNullable(mixed $value, string $expectedType): void

@@ -215,18 +215,18 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
     public function testExecuteWithUnfreezeStatusUnknown(): void
     {
-        $order = $this->createMockOrder();
-        $merchant = $this->createMockMerchant();
-        $unfrozenOrder = $this->createMockOrder();
+        $order = $this->createMockOrderWithMerchant();
+
+        // 创建一个解冻状态未知的订单（isUnfreezeUnsplit返回false）
+        /** @phpstan-var MockObject&ProfitShareOrder $unfrozenOrder */
+        $unfrozenOrder = $this->createMock(ProfitShareOrder::class);
+        $unfrozenOrder->method('isUnfreezeUnsplit')->willReturn(false); // 关键：未解冻状态
 
         $this->setupOrderRepository([$order]);
 
-        /** @phpstan-var MockObject&ProfitShareOrder $order */
-        $order->method('getMerchant')->willReturn($merchant);
-
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->with($merchant, self::isInstanceOf(ProfitShareUnfreezeRequest::class))
+            ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(ProfitShareUnfreezeRequest::class))
             ->willReturn($unfrozenOrder)
         ;
 

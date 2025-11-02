@@ -19,6 +19,12 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 {
     private ProfitShareReturnOrder $profitShareReturnOrder;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->onSetUp();
+    }
+
     protected function onSetUp(): void
     {
         $this->profitShareReturnOrder = new ProfitShareReturnOrder();
@@ -523,6 +529,29 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
         $this->assertIsArray($metadata);
         $this->assertArrayHasKey('auto_generated', $metadata);
         $this->assertTrue($metadata['auto_generated']);
+    }
+
+    /**
+     * @return iterable<array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
+    {
+        return [
+            ['subMchId', '1234567890123456789'],
+            ['orderId', 'WX_ORDER123456789'],
+            ['outOrderNo', 'ORDER1234567890123456'],
+            ['outReturnNo', 'RETURN1234567890123456'],
+            ['returnNo', 'WX_RETURN123456789'],
+            ['amount', 5000],
+            ['description', '用户申请退款'],
+            ['result', 'SUCCESS'],
+            ['failReason', '商户余额不足'],
+            ['wechatCreatedAt', new \DateTimeImmutable('2024-01-01 12:00:00')],
+            ['wechatFinishedAt', new \DateTimeImmutable('2024-01-01 12:05:00')],
+            ['requestPayload', '{"test": "request"}'],
+            ['responsePayload', '{"test": "response"}'],
+            ['metadata', ['key' => 'value']],
+        ];
     }
 
     /**
