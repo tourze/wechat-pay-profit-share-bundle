@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Service;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Tourze\WechatPayProfitShareBundle\Service\Helper\WechatPayProfitShareHelperTrait;
 use WechatPayBundle\Entity\Merchant;
@@ -14,6 +15,7 @@ use Yiisoft\Json\Json;
  * 微信分账API执行器
  * 负责处理微信分账相关的HTTP请求、响应处理和日志记录
  */
+#[WithMonologChannel(channel: 'wechat_pay_profit_share')]
 class ProfitShareApiExecutor
 {
     use WechatPayProfitShareHelperTrait;

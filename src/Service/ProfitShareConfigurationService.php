@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Service;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOperationLog;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOperationType;
@@ -13,6 +14,7 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
+#[WithMonologChannel(channel: 'wechat_pay_profit_share')]
 class ProfitShareConfigurationService
 {
     use WechatPayProfitShareHelperTrait;

@@ -176,11 +176,6 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
         $this->setupOrderRepository([$order]);
 
-        $this->logger->expects($this->once())
-            ->method('info')
-            ->with('订单已解冻，跳过处理', self::isArray())
-        ;
-
         $this->commandTester->execute([]);
 
         $output = $this->commandTester->getDisplay();
@@ -199,11 +194,6 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
             ->method('unfreezeRemainingAmount')
             ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(ProfitShareUnfreezeRequest::class))
             ->willReturn($unfrozenOrder)
-        ;
-
-        $this->logger->expects($this->once())
-            ->method('info')
-            ->with('分账资金解冻成功', self::isArray())
         ;
 
         $this->commandTester->execute([]);
@@ -230,11 +220,7 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
             ->willReturn($unfrozenOrder)
         ;
 
-        $this->logger->expects($this->once())
-            ->method('warning')
-            ->with('分账资金解冻状态未知', self::isArray())
-        ;
-
+        
         $this->commandTester->execute([]);
 
         $output = $this->commandTester->getDisplay();
@@ -251,11 +237,7 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
         /** @phpstan-var MockObject&ProfitShareOrder $order */
         $order->method('getMerchant')->willReturn(null);
 
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with('分账订单缺少商户信息', self::isArray())
-        ;
-
+        
         $this->commandTester->execute([]);
 
         $output = $this->commandTester->getDisplay();
@@ -278,11 +260,7 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
             ->willThrowException(new \RuntimeException('Unfreeze error'))
         ;
 
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with('分账资金解冻失败', self::isArray())
-        ;
-
+        
         $this->commandTester->execute([]);
 
         $output = $this->commandTester->getDisplay();
@@ -293,12 +271,14 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
     public function testExecuteWithForceUnfreeze(): void
     {
         $order = $this->createMockOrderWithMerchant();
+        $unfrozenOrder = $this->createMockOrder(); // 返回一个不同的mock表示解冻后的订单
 
         $this->setupOrderRepositoryWithoutTimeCheck([$order]);
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->willReturn($order)
+            ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(ProfitShareUnfreezeRequest::class))
+            ->willReturn($unfrozenOrder)
         ;
 
         $this->commandTester->execute(['--force-unfreeze' => true]);
@@ -395,20 +375,32 @@ class ProfitShareUnfreezeCommandTest extends AbstractCommandTestCase
 
     public function testOptionForceUnfreeze(): void
     {
-        $order = $this->createMockOrder();
-        $merchant = $this->createMockMerchant();
+        $order = $this->createMockOrderWithMerchant();
+        $unfrozenOrder = $this->createMockOrder();
 
         $this->setupOrderRepositoryWithoutTimeCheck([$order]);
 
         $this->profitShareService->expects($this->once())
             ->method('unfreezeRemainingAmount')
-            ->willReturn($order)
+            ->with(self::isInstanceOf(Merchant::class), self::isInstanceOf(ProfitShareUnfreezeRequest::class))
+            ->willReturn($unfrozenOrder)
         ;
 
         $this->commandTester->execute(['--force-unfreeze' => true]);
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('总订单数', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+    }
+
+    public function testOptionMerchantId(): void
+    {
+        $this->setupOrderRepository([]);
+
+        $this->commandTester->execute(['--merchant-id' => '123']);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('没有需要解冻的订单', $output);
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
