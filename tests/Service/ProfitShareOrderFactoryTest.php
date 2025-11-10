@@ -21,7 +21,7 @@ class ProfitShareOrderFactoryTest extends TestCase
 {
     private ProfitShareOrderFactory $factory;
 
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
         $this->factory = new ProfitShareOrderFactory();
     }

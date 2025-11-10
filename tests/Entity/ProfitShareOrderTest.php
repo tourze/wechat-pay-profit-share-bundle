@@ -23,8 +23,9 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 {
     private ProfitShareOrder $profitShareOrder;
 
-    protected function onSetUp(): void
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->profitShareOrder = new ProfitShareOrder();
     }
 

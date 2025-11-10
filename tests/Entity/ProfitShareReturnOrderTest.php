@@ -22,11 +22,6 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->onSetUp();
-    }
-
-    protected function onSetUp(): void
-    {
         $this->profitShareReturnOrder = new ProfitShareReturnOrder();
     }
 

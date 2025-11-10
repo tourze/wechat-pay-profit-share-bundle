@@ -23,11 +23,6 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->onSetUp();
-    }
-
-    protected function onSetUp(): void
-    {
         $this->profitShareReceiver = new ProfitShareReceiver();
     }
 

@@ -20,7 +20,7 @@ class ProfitShareResponseProcessorTest extends TestCase
 {
     private ProfitShareResponseProcessor $processor;
 
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
         $this->processor = new ProfitShareResponseProcessor();
     }

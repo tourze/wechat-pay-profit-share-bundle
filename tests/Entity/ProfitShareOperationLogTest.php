@@ -20,8 +20,9 @@ class ProfitShareOperationLogTest extends AbstractEntityTestCase
 {
     private ProfitShareOperationLog $profitShareOperationLog;
 
-    protected function onSetUp(): void
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->profitShareOperationLog = new ProfitShareOperationLog();
     }
 

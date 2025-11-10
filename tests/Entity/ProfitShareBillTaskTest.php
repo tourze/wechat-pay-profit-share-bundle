@@ -20,8 +20,9 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
 {
     private ProfitShareBillTask $profitShareBillTask;
 
-    protected function onSetUp(): void
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->profitShareBillTask = new ProfitShareBillTask();
     }
 

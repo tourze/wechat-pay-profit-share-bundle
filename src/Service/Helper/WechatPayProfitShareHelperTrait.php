@@ -25,22 +25,4 @@ trait WechatPayProfitShareHelperTrait
             return null;
         }
     }
-
-    protected function minDate(?\DateTimeImmutable $current, \DateTimeImmutable $candidate): \DateTimeImmutable
-    {
-        if (null === $current) {
-            return $candidate;
-        }
-
-        return $candidate < $current ? $candidate : $current;
-    }
-
-    protected function maxDate(?\DateTimeImmutable $current, \DateTimeImmutable $candidate): \DateTimeImmutable
-    {
-        if (null === $current) {
-            return $candidate;
-        }
-
-        return $candidate > $current ? $candidate : $current;
-    }
 }

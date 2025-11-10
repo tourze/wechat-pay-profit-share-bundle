@@ -24,7 +24,7 @@ class ProfitShareOperationLoggerTest extends TestCase
     /** @phpstan-var MockObject&ProfitShareOperationLogRepository */
     private ProfitShareOperationLogRepository $repository;
 
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
         $this->repository = $this->createMock(ProfitShareOperationLogRepository::class);
         $this->logger = new ProfitShareOperationLogger($this->repository);

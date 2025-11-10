@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^测试用例 Tourze\\WechatPayProfitShareBundle\\Tests\\Service\\ProfitShareApiExecutorTest 的测试目标 Tourze\\WechatPayProfitShareBundle\\Service\\ProfitShareApiExecutor 是一个服务，因此不应直接继承自 PHPUnit\\Framework\\TestCase。$#'
+			count: 1
+			path: tests/Service/ProfitShareApiExecutorTest.php
