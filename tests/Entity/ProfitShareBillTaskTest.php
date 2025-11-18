@@ -113,6 +113,10 @@ class ProfitShareBillTaskTest extends AbstractEntityTestCase
                 $this->profitShareBillTask->setDownloadUrl($value);
                 $this->assertEquals($value, $this->profitShareBillTask->getDownloadUrl());
                 break;
+            case 'localPath':
+                $this->profitShareBillTask->setLocalPath($value);
+                $this->assertEquals($value, $this->profitShareBillTask->getLocalPath());
+                break;
             case 'subMchId':
                 $this->profitShareBillTask->setSubMchId($value);
                 $this->assertEquals($value, $this->profitShareBillTask->getSubMchId());

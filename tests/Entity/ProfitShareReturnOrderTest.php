@@ -110,6 +110,14 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
                 $this->profitShareReturnOrder->setDescription($value);
                 $this->assertEquals($value, $this->profitShareReturnOrder->getDescription());
                 break;
+            case 'result':
+                $this->profitShareReturnOrder->setResult($value);
+                $this->assertEquals($value, $this->profitShareReturnOrder->getResult());
+                break;
+            case 'failReason':
+                $this->profitShareReturnOrder->setFailReason($value);
+                $this->assertEquals($value, $this->profitShareReturnOrder->getFailReason());
+                break;
         }
     }
 

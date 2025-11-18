@@ -19,7 +19,13 @@ class ProfitShareReceiverRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {
-        return new ProfitShareReceiver();
+        $receiver = new ProfitShareReceiver();
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account_' . bin2hex(random_bytes(4)));
+        $receiver->setAmount(100);
+        $receiver->setDescription('Test profit share');
+
+        return $receiver;
     }
 
     protected function getRepository(): ProfitShareReceiverRepository

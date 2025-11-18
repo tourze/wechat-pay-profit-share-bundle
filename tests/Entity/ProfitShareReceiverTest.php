@@ -204,6 +204,10 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
                 $this->profitShareReceiver->setWechatFinishedAt($value);
                 $this->assertEquals($value, $this->profitShareReceiver->getWechatFinishedAt());
                 break;
+            case 'nextRetryAt':
+                $this->profitShareReceiver->setNextRetryAt($value);
+                $this->assertEquals($value, $this->profitShareReceiver->getNextRetryAt());
+                break;
         }
     }
 

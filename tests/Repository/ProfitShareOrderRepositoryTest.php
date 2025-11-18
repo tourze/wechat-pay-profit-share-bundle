@@ -19,7 +19,12 @@ class ProfitShareOrderRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {
-        return new ProfitShareOrder();
+        $order = new ProfitShareOrder();
+        $order->setSubMchId('test_sub_mch_' . bin2hex(random_bytes(4)));
+        $order->setTransactionId('test_transaction_' . bin2hex(random_bytes(8)));
+        $order->setOutOrderNo('test_out_order_' . bin2hex(random_bytes(8)));
+
+        return $order;
     }
 
     protected function getRepository(): ProfitShareOrderRepository
