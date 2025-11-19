@@ -19,7 +19,14 @@ class ProfitShareReceiverRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {
+        // 创建关联的 ProfitShareOrder
+        $order = new \Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder();
+        $order->setSubMchId('test_sub_mch_' . bin2hex(random_bytes(4)));
+        $order->setTransactionId('test_transaction_' . bin2hex(random_bytes(8)));
+        $order->setOutOrderNo('test_out_order_' . bin2hex(random_bytes(8)));
+
         $receiver = new ProfitShareReceiver();
+        $receiver->setOrder($order);
         $receiver->setType('MERCHANT_ID');
         $receiver->setAccount('test_account_' . bin2hex(random_bytes(4)));
         $receiver->setAmount(100);

@@ -24,7 +24,7 @@ class ProfitShareReceiver implements \Stringable
     use TimestampableAware;
     use BlameableAware;
 
-    #[ORM\ManyToOne(targetEntity: ProfitShareOrder::class, inversedBy: 'receivers')]
+    #[ORM\ManyToOne(targetEntity: ProfitShareOrder::class, inversedBy: 'receivers', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?ProfitShareOrder $order = null;
 
