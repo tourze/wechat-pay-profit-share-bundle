@@ -19,7 +19,7 @@ use WechatPayBundle\Entity\Merchant;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInterface
+final class ProfitShareOperationLogFixtures extends Fixture implements FixtureGroupInterface
 {
     public const OPERATION_LOG_ORDER_SUCCESS_REFERENCE = 'operation-log-order-success';
     public const OPERATION_LOG_RECEIVER_ADD_SUCCESS_REFERENCE = 'operation-log-receiver-add-success';

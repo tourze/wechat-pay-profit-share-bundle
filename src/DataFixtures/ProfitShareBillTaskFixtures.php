@@ -19,7 +19,7 @@ use WechatPayBundle\Entity\Merchant;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterface
+final class ProfitShareBillTaskFixtures extends Fixture implements FixtureGroupInterface
 {
     public const BILL_TASK_PENDING_REFERENCE = 'bill-task-pending';
     public const BILL_TASK_READY_REFERENCE = 'bill-task-ready';

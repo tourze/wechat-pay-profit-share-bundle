@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverRequest;
  * @internal
  */
 #[CoversClass(ProfitShareReceiverRequest::class)]
-class ProfitShareReceiverRequestTest extends TestCase
+final class ProfitShareReceiverRequestTest extends TestCase
 {
     public function testCreateRequestWithRequiredFields(): void
     {

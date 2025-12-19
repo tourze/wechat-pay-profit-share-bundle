@@ -9,6 +9,7 @@
     "doctrine/doctrine-bundle": "^2.13",
     "doctrine/orm": "^3.0",
     "doctrine/persistence": "^4.1",
+    "easycorp/easyadmin-bundle": "^4",
     "monolog/monolog": "^3.1",
     "psr/http-message": "^1.1 || ^2.0",
     "psr/log": "^3|^2|^1",
@@ -16,7 +17,9 @@
     "symfony/console": "^7.3",
     "symfony/dependency-injection": "^7.3",
     "symfony/doctrine-bridge": "^7.3",
-    "symfony/framework-bundle": "^7.3",
+    "symfony/form": "^7.3",
+    "symfony/framework-bundle": "^7.4",
+    "symfony/http-foundation": "^7.4",
     "symfony/http-kernel": "^7.3",
     "symfony/property-access": "^7.3",
     "symfony/serializer": "^7.3",
@@ -41,10 +44,10 @@
     "symfony/phpunit-bridge": "^7.3",
     "tourze/phpunit-doctrine-entity": "1.*",
     "tourze/phpunit-enum": "1.*",
-    "tourze/phpunit-symfony-kernel-test": "1.0.*",
-    "tourze/phpunit-symfony-unit-test": "1.*",
-    "tourze/phpunit-symfony-web-test": "1.*",
-    "tourze/symfony-testing-framework": "1.*"
+    "tourze/phpunit-symfony-kernel-test": "2.0.*",
+    "tourze/phpunit-symfony-unit-test": "2.0.*",
+    "tourze/phpunit-symfony-web-test": "2.0.*",
+    "tourze/symfony-testing-framework": "2.0.*"
   },
   "autoload": {
     "psr-4": {

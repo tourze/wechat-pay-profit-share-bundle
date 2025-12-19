@@ -14,7 +14,7 @@ use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
-class ProfitShareNotificationService
+final class ProfitShareNotificationService
 {
     use WechatPayProfitShareHelperTrait;
 

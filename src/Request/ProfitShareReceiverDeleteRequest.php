@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Request;
 
-class ProfitShareReceiverDeleteRequest
+final class ProfitShareReceiverDeleteRequest
 {
     public function __construct(
         private readonly string $subMchId,

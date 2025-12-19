@@ -16,7 +16,7 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
  * @internal
  */
 #[CoversClass(ProfitShareReceiver::class)]
-class ProfitShareReceiverTest extends AbstractEntityTestCase
+final class ProfitShareReceiverTest extends AbstractEntityTestCase
 {
     private ProfitShareReceiver $profitShareReceiver;
 
@@ -310,7 +310,7 @@ class ProfitShareReceiverTest extends AbstractEntityTestCase
         $this->assertEmpty((string) $this->profitShareReceiver);
 
         $this->profitShareReceiver->setAccount('1900000109');
-        $this->assertEquals('1900000109', (string) $this->profitShareReceiver);
+        $this->assertSame('1900000109', $this->profitShareReceiver->__toString());
     }
 
     public function testStringableImplementation(): void

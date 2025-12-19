@@ -23,7 +23,7 @@ use Tourze\WechatPayProfitShareBundle\Service\ProfitShareService;
     description: '监控并执行微信支付分账资金解冻'
 )]
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareUnfreezeCommand extends Command
+final class ProfitShareUnfreezeCommand extends Command
 {
     public function __construct(
         private readonly ProfitShareOrderRepository $orderRepository,
@@ -273,7 +273,7 @@ class ProfitShareUnfreezeCommand extends Command
 
         // 只查询最近30天内的记录
         $since = new \DateTimeImmutable('-30 days');
-        $qb->andWhere('o.createdAt >= :since')
+        $qb->andWhere('o.createTime >= :since')
             ->setParameter('since', $since)
         ;
 

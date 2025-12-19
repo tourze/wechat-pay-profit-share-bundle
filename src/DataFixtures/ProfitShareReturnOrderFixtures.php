@@ -18,7 +18,7 @@ use WechatPayBundle\Entity\Merchant;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInterface
+final class ProfitShareReturnOrderFixtures extends Fixture implements FixtureGroupInterface
 {
     public const RETURN_ORDER_PROCESSING_REFERENCE = 'return-order-processing';
     public const RETURN_ORDER_SUCCESS_REFERENCE = 'return-order-success';

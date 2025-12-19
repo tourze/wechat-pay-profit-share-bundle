@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Psr\Log\LoggerInterface;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
+use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOperationType;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareOperationLogRepository;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareNotificationService;
 use WeChatPay\Crypto\AesGcm;
@@ -20,7 +21,7 @@ use Yiisoft\Json\Json;
  */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareNotificationService::class)]
-class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
+final class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
 {
     protected function onSetUp(): void
     {
@@ -28,10 +29,7 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
 
     public function testHandleNotification(): void
     {
-        // 创建Mock依赖
-        $operationRepository = $this->createMock(ProfitShareOperationLogRepository::class);
-        $operationRepository->expects($this->once())->method('save');
-
+        // 保留必要的网络相关Mock（符合原则）
         $builderFactory = $this->createMock(WechatPayBuilder::class);
 
         $keys = $this->generateKeyPair();
@@ -41,16 +39,20 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
             ->willReturn($keys['public'])
         ;
 
-        // 将Mock依赖注入到容器中
-        self::getContainer()->set(ProfitShareOperationLogRepository::class, $operationRepository);
+        // 注入必要的Mock，Repository使用真实实现
         self::getContainer()->set(WechatPayBuilder::class, $builderFactory);
 
-        // 从容器获取服务
+        // 使用真实的Repository
         $service = self::getService(ProfitShareNotificationService::class);
+        $operationRepository = self::getService(ProfitShareOperationLogRepository::class);
+
+        // 清理之前的日志记录
+        self::getEntityManager()->createQuery('DELETE FROM Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOperationLog')->execute();
 
         $merchant = new Merchant();
         $merchant->setMchId('1900000001');
         $merchant->setApiKey('01234567890123456789012345678901');
+        $this->persistAndFlush($merchant);
 
         $resource = [
             'sp_mchid' => '1900000100',
@@ -112,6 +114,11 @@ class ProfitShareNotificationServiceTest extends AbstractIntegrationTestCase
         $this->assertIsArray($result['resource']);
         $this->assertArrayHasKey('sub_mchid', $result['resource']);
         $this->assertSame('1900000109', $result['resource']['sub_mchid']);
+
+        // 验证操作日志被记录
+        $logs = $operationRepository->findAll();
+        $this->assertNotEmpty($logs);
+        $this->assertSame(ProfitShareOperationType::NOTIFICATION, $logs[0]->getType());
     }
 
     /**

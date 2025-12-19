@@ -19,7 +19,7 @@ use WechatPayBundle\Entity\Merchant;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
+final class ProfitShareOrderFixtures extends Fixture implements FixtureGroupInterface
 {
     public const ORDER_PROCESSING_REFERENCE = 'order-processing';
     public const ORDER_FINISHED_REFERENCE = 'order-finished';

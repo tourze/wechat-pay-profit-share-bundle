@@ -13,7 +13,7 @@ use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReturnOrder;
  * @extends ServiceEntityRepository<ProfitShareReturnOrder>
  */
 #[AsRepository(entityClass: ProfitShareReturnOrder::class)]
-class ProfitShareReturnOrderRepository extends ServiceEntityRepository
+final class ProfitShareReturnOrderRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

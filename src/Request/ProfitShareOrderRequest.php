@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Request;
 
-class ProfitShareOrderRequest
+final class ProfitShareOrderRequest
 {
     /**
      * @var list<ProfitShareReceiverRequest>

@@ -15,7 +15,7 @@ use Yiisoft\Json\Json;
  * 分账操作日志记录器
  * 负责统一处理分账操作的日志记录和持久化
  */
-class ProfitShareOperationLogger
+final class ProfitShareOperationLogger
 {
     use WechatPayProfitShareHelperTrait;
 

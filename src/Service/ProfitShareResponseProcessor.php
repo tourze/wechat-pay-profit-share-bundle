@@ -13,7 +13,7 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
  * 分账响应处理器
  * 负责处理微信分账响应数据的同步和应用
  */
-class ProfitShareResponseProcessor
+final class ProfitShareResponseProcessor
 {
     /**
      * 应用响应数据到订单

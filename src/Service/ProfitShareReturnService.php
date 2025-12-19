@@ -18,7 +18,7 @@ use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
 
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareReturnService
+final class ProfitShareReturnService
 {
     use WechatPayProfitShareHelperTrait;
 

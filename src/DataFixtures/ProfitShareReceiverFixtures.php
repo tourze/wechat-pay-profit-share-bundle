@@ -18,7 +18,7 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterface
+final class ProfitShareReceiverFixtures extends Fixture implements FixtureGroupInterface
 {
     public const RECEIVER_PENDING_REFERENCE = 'receiver-pending';
     public const RECEIVER_SUCCESS_REFERENCE = 'receiver-success';

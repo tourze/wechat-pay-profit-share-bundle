@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReceiverDeleteRequest;
  * @internal
  */
 #[CoversClass(ProfitShareReceiverDeleteRequest::class)]
-class ProfitShareReceiverDeleteRequestTest extends TestCase
+final class ProfitShareReceiverDeleteRequestTest extends TestCase
 {
     public function testCreateRequestWithRequiredFields(): void
     {

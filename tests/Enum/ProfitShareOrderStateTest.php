@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
  * @internal
  */
 #[CoversClass(ProfitShareOrderState::class)]
-class ProfitShareOrderStateTest extends AbstractEnumTestCase
+final class ProfitShareOrderStateTest extends AbstractEnumTestCase
 {
     public function testToArray(): void
     {

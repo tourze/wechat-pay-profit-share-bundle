@@ -24,7 +24,7 @@ use WechatPayBundle\Entity\Merchant;
     description: '自动下载微信支付分账账单'
 )]
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareBillDownloadCommand extends Command
+final class ProfitShareBillDownloadCommand extends Command
 {
     public function __construct(
         private readonly ProfitShareBillTaskRepository $billTaskRepository,

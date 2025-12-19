@@ -3,14 +3,14 @@ services:
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    public: true        # Make services public for testing
+    public: false
 
+  Tourze\WechatPayProfitShareBundle\Controller\:
+    resource: '../../Controller/'
   Tourze\WechatPayProfitShareBundle\Repository\:
     resource: '../../Repository/'
-
   Tourze\WechatPayProfitShareBundle\Service\:
     resource: '../../Service/'
-
+    public: true
   Tourze\WechatPayProfitShareBundle\Command\:
     resource: '../../Command/'
-    tags: ['console.command']

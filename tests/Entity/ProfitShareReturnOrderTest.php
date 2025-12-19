@@ -15,7 +15,7 @@ use WechatPayBundle\Entity\Merchant;
  * @internal
  */
 #[CoversClass(ProfitShareReturnOrder::class)]
-class ProfitShareReturnOrderTest extends AbstractEntityTestCase
+final class ProfitShareReturnOrderTest extends AbstractEntityTestCase
 {
     private ProfitShareReturnOrder $profitShareReturnOrder;
 
@@ -276,7 +276,7 @@ class ProfitShareReturnOrderTest extends AbstractEntityTestCase
         $this->assertEmpty((string) $this->profitShareReturnOrder);
 
         $this->profitShareReturnOrder->setOutReturnNo('RETURN123456789');
-        $this->assertEquals('RETURN123456789', (string) $this->profitShareReturnOrder);
+        $this->assertSame('RETURN123456789', $this->profitShareReturnOrder->__toString());
     }
 
     public function testStringableImplementation(): void

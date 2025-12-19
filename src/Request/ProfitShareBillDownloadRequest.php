@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Request;
 
-class ProfitShareBillDownloadRequest
+final class ProfitShareBillDownloadRequest
 {
     public function __construct(
         private ?string $downloadUrl = null,

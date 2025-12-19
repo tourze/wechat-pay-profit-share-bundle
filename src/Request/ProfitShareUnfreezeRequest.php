@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Request;
 
-class ProfitShareUnfreezeRequest
+final class ProfitShareUnfreezeRequest
 {
     public function __construct(
         private ?string $subMchId = null,

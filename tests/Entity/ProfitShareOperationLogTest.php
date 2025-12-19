@@ -16,7 +16,7 @@ use WechatPayBundle\Entity\Merchant;
  * @internal
  */
 #[CoversClass(ProfitShareOperationLog::class)]
-class ProfitShareOperationLogTest extends AbstractEntityTestCase
+final class ProfitShareOperationLogTest extends AbstractEntityTestCase
 {
     private ProfitShareOperationLog $profitShareOperationLog;
 

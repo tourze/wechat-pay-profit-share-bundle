@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Request;
 
-class ProfitShareReceiverRequest
+final class ProfitShareReceiverRequest
 {
     public function __construct(
         private readonly string $type,

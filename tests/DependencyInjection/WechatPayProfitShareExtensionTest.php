@@ -13,7 +13,7 @@ use Tourze\WechatPayProfitShareBundle\DependencyInjection\WechatPayProfitShareEx
  * @internal
  */
 #[CoversClass(WechatPayProfitShareExtension::class)]
-class WechatPayProfitShareExtensionTest extends AbstractDependencyInjectionExtensionTestCase
+final class WechatPayProfitShareExtensionTest extends AbstractDependencyInjectionExtensionTestCase
 {
     // 基类已提供完整的Extension测试覆盖，无需额外测试方法
 }

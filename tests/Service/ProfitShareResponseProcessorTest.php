@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
 use Tourze\WechatPayProfitShareBundle\Service\ProfitShareResponseProcessor;
+use WechatPayBundle\Entity\Merchant;
 
 /**
  * @internal
  */
+#[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareResponseProcessor::class)]
-class ProfitShareResponseProcessorTest extends TestCase
+final class ProfitShareResponseProcessorTest extends AbstractIntegrationTestCase
 {
     private ProfitShareResponseProcessor $processor;
 
     protected function onSetUp(): void
     {
-        $this->processor = new ProfitShareResponseProcessor();
+        $this->processor = self::getService(ProfitShareResponseProcessor::class);
     }
 
     public function testApplyResponseWithProcessingOrder(): void
     {
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+
         $response = [
             'state' => 'PROCESSING',
             'transaction_id' => 'test_transaction_id',
@@ -35,92 +45,65 @@ class ProfitShareResponseProcessorTest extends TestCase
             'out_order_no' => 'test_out_order_no',
         ];
 
-        $order->expects($this->once())
-            ->method('setState')
-            ->with(ProfitShareOrderState::PROCESSING)
-        ;
-
-        $order->expects($this->once())
-            ->method('setTransactionId')
-            ->with('test_transaction_id')
-        ;
-
-        $order->expects($this->once())
-            ->method('setOrderId')
-            ->with('test_order_id')
-        ;
-
-        $order->expects($this->once())
-            ->method('setOutOrderNo')
-            ->with('test_out_order_no')
-        ;
-
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([])
-        ;
-
         $this->processor->applyResponse($order, $response);
+
+        $this->assertSame(ProfitShareOrderState::PROCESSING, $order->getState());
+        $this->assertSame('test_transaction_id', $order->getTransactionId());
+        $this->assertSame('test_order_id', $order->getOrderId());
+        $this->assertSame('test_out_order_no', $order->getOutOrderNo());
     }
 
     public function testApplyResponseWithFinishedOrder(): void
     {
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+
         $response = [
             'state' => 'FINISHED',
         ];
 
-        $order->expects($this->once())
-            ->method('setState')
-            ->with(ProfitShareOrderState::FINISHED)
-        ;
-
-        $order->expects($this->never())
-            ->method('setTransactionId')
-        ;
-
-        $order->expects($this->once())
-            ->method('setOrderId')
-            ->with('')
-        ;
-
-        $order->expects($this->once())
-            ->method('setOutOrderNo')
-            ->with('')
-        ;
-
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([])
-        ;
-
         $this->processor->applyResponse($order, $response);
+
+        $this->assertSame(ProfitShareOrderState::FINISHED, $order->getState());
     }
 
     public function testApplyResponseWithClosedOrder(): void
     {
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+
         $response = [
             'state' => 'CLOSED',
         ];
 
-        $order->expects($this->once())
-            ->method('setState')
-            ->with(ProfitShareOrderState::CLOSED)
-        ;
-
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([])
-        ;
-
         $this->processor->applyResponse($order, $response);
+
+        $this->assertSame(ProfitShareOrderState::CLOSED, $order->getState());
     }
 
     public function testApplyResponseWithSuccessfulReceivers(): void
     {
-        $receiver = $this->createMock(ProfitShareReceiver::class);
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $receiver = new ProfitShareReceiver();
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account');
+        $receiver->setAmount(100);
+        $receiver->setSequence(0);
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+        $order->addReceiver($receiver);
 
         $response = [
             'state' => 'FINISHED',
@@ -135,63 +118,30 @@ class ProfitShareResponseProcessorTest extends TestCase
             ],
         ];
 
-        $order->expects($this->once())
-            ->method('setState')
-            ->with(ProfitShareOrderState::FINISHED)
-        ;
-
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([$receiver])
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getType')
-            ->willReturn('MERCHANT_ID')
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getAccount')
-            ->willReturn('test_account')
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getAmount')
-            ->willReturn(100)
-        ;
-
-        $receiver->expects($this->once())
-            ->method('setDetail')
-            ->with(json_encode($response['receivers'][0], JSON_UNESCAPED_UNICODE))
-        ;
-
-        $receiver->expects($this->once())
-            ->method('setResult')
-            ->with(ProfitShareReceiverResult::SUCCESS)
-        ;
-
-        $receiver->expects($this->once())
-            ->method('setFinishAmount')
-            ->with(100)
-        ;
-
-        $order->expects($this->once())
-            ->method('setFinishTime')
-            ->with('2023-01-01T12:00:00+08:00')
-        ;
-
-        $order->expects($this->once())
-            ->method('setSuccessTime')
-            ->with('2023-01-01T12:00:00+08:00')
-        ;
-
         $this->processor->applyResponse($order, $response);
+
+        $this->assertSame(ProfitShareOrderState::FINISHED, $order->getState());
+        $this->assertSame(ProfitShareReceiverResult::SUCCESS, $receiver->getResult());
+        $this->assertSame(100, $receiver->getFinishAmount());
+        $this->assertSame('2023-01-01T12:00:00+08:00', $order->getFinishTime());
+        $this->assertSame('2023-01-01T12:00:00+08:00', $order->getSuccessTime());
     }
 
     public function testApplyResponseWithFailedReceivers(): void
     {
-        $receiver = $this->createMock(ProfitShareReceiver::class);
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $receiver = new ProfitShareReceiver();
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account');
+        $receiver->setAmount(100);
+        $receiver->setSequence(0);
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+        $order->addReceiver($receiver);
 
         $response = [
             'receivers' => [
@@ -205,46 +155,22 @@ class ProfitShareResponseProcessorTest extends TestCase
             ],
         ];
 
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([$receiver])
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getType')
-            ->willReturn('MERCHANT_ID')
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getAccount')
-            ->willReturn('test_account')
-        ;
-
-        $receiver->expects($this->once())
-            ->method('getAmount')
-            ->willReturn(100)
-        ;
-
-        $receiver->expects($this->once())
-            ->method('setResult')
-            ->with(ProfitShareReceiverResult::FAILED)
-        ;
-
-        $order->expects($this->once())
-            ->method('setFinishTime')
-            ->with('2023-01-01T12:00:00+08:00')
-        ;
-
-        $order->expects($this->never())
-            ->method('setSuccessTime')
-        ;
-
         $this->processor->applyResponse($order, $response);
+
+        $this->assertSame(ProfitShareReceiverResult::FAILED, $receiver->getResult());
+        $this->assertSame('2023-01-01T12:00:00+08:00', $order->getFinishTime());
+        // Success time should not be set for failed receivers
+        $this->assertNull($order->getSuccessTime());
     }
 
     public function testApplyResponseWithInvalidReceivers(): void
     {
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
 
         $response = [
             'receivers' => [
@@ -255,36 +181,44 @@ class ProfitShareResponseProcessorTest extends TestCase
             ],
         ];
 
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([])
-        ;
-
-        // Should not process invalid receivers
-        $order->expects($this->never())
-            ->method('setFinishTime')
-        ;
-
+        // Should handle invalid receivers gracefully
         $this->processor->applyResponse($order, $response);
+
+        // Should not set finish time for invalid receivers
+        $this->assertNull($order->getFinishTime());
     }
 
-    public function testApplyResponseWithNullResponse(): void
+    public function testApplyResponseWithEmptyResponse(): void
     {
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
 
-        // Should handle empty or null response gracefully
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([])
-        ;
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
 
+        // Should handle empty response gracefully
         $this->processor->applyResponse($order, []);
+
+        // State should remain at default PROCESSING value (entity has default state)
+        $this->assertSame(ProfitShareOrderState::PROCESSING, $order->getState());
     }
 
     public function testApplyResponseWithMultipleFinishTimes(): void
     {
-        $receiver = $this->createMock(ProfitShareReceiver::class);
-        $order = $this->createMock(ProfitShareOrder::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+
+        $receiver = new ProfitShareReceiver();
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account');
+        $receiver->setAmount(100);
+        $receiver->setSequence(0);
+
+        $order = new ProfitShareOrder();
+        $order->setMerchant($merchant);
+        $order->setSubMchId('test_sub_mch_id');
+        $order->addReceiver($receiver);
 
         $response = [
             'receivers' => [
@@ -305,19 +239,17 @@ class ProfitShareResponseProcessorTest extends TestCase
             ],
         ];
 
-        $order->expects($this->once())
-            ->method('getReceivers')
-            ->willReturn([$receiver])
-        ;
-
-        $order->expects($this->once())
-            ->method('setFinishTime')
-            ->with('2023-01-01T13:00:00+08:00'); // Max date
-
-        $order->expects($this->once())
-            ->method('setSuccessTime')
-            ->with('2023-01-01T12:00:00+08:00'); // Min date
-
         $this->processor->applyResponse($order, $response);
+
+        // Max date
+        $this->assertSame('2023-01-01T13:00:00+08:00', $order->getFinishTime());
+        // Min date
+        $this->assertSame('2023-01-01T12:00:00+08:00', $order->getSuccessTime());
+    }
+
+    public function testServiceIsRegisteredInContainer(): void
+    {
+        $processor = self::getService(ProfitShareResponseProcessor::class);
+        $this->assertInstanceOf(ProfitShareResponseProcessor::class, $processor);
     }
 }

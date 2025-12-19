@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareReturnRequest;
  * @internal
  */
 #[CoversClass(ProfitShareReturnRequest::class)]
-class ProfitShareReturnRequestTest extends TestCase
+final class ProfitShareReturnRequestTest extends TestCase
 {
     public function testCreateRequestWithOrderId(): void
     {

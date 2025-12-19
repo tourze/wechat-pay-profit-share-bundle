@@ -25,7 +25,7 @@ use WechatPayBundle\Entity\Merchant;
     description: '重试失败的微信支付分账接收方'
 )]
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareRetryCommand extends Command
+final class ProfitShareRetryCommand extends Command
 {
     public function __construct(
         private readonly ProfitShareReceiverRepository $receiverRepository,
@@ -246,7 +246,7 @@ class ProfitShareRetryCommand extends Command
         }
 
         // 检查距离上次重试是否足够间隔
-        $updatedAt = $receiver->getUpdatedAt();
+        $updatedAt = $receiver->getUpdateTime();
         if (null !== $updatedAt && $updatedAt > $retryThreshold) {
             return true;
         }
@@ -437,7 +437,7 @@ class ProfitShareRetryCommand extends Command
 
         // 只查询最近7天内的记录
         $since = new \DateTimeImmutable('-7 days');
-        $qb->andWhere('r.createdAt >= :since')
+        $qb->andWhere('r.createTime >= :since')
             ->setParameter('since', $since)
         ;
 

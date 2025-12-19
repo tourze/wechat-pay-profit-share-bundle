@@ -15,7 +15,7 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReturnOrderRepositor
  */
 #[CoversClass(ProfitShareReturnOrderRepository::class)]
 #[RunTestsInSeparateProcesses]
-class ProfitShareReturnOrderRepositoryTest extends AbstractRepositoryTestCase
+final class ProfitShareReturnOrderRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {

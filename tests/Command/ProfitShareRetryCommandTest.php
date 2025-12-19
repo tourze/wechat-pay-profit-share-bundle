@@ -4,25 +4,18 @@ declare(strict_types=1);
 
 namespace Tourze\WechatPayProfitShareBundle\Tests\Command;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
 use Tourze\WechatPayProfitShareBundle\Command\ProfitShareRetryCommand;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver;
+use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareOrderState;
 use Tourze\WechatPayProfitShareBundle\Enum\ProfitShareReceiverResult;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReceiverRepository;
-use Tourze\WechatPayProfitShareBundle\Service\ProfitShareService;
 use WechatPayBundle\Entity\Merchant;
 
 /**
@@ -30,25 +23,24 @@ use WechatPayBundle\Entity\Merchant;
  */
 #[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareRetryCommand::class)]
-class ProfitShareRetryCommandTest extends AbstractCommandTestCase
+final class ProfitShareRetryCommandTest extends AbstractCommandTestCase
 {
     private CommandTester $commandTester;
 
-    /** @phpstan-var MockObject&ProfitShareReceiverRepository */
     private ProfitShareReceiverRepository $receiverRepository;
 
-    /** @phpstan-var MockObject&ProfitShareService */
-    private ProfitShareService $profitShareService;
-
-    /** @phpstan-var MockObject&LoggerInterface */
-    private LoggerInterface $logger;
+    /**
+     * 清理 fixtures 加载的接收方数据
+     */
+    private function cleanReceiverData(): void
+    {
+        self::getEntityManager()->createQuery('DELETE FROM Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver')->execute();
+        self::getEntityManager()->createQuery('DELETE FROM Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder')->execute();
+    }
 
     public function testExecuteWithNoReceivers(): void
     {
-        $this->receiverRepository->expects($this->once())
-            ->method('createQueryBuilder')
-            ->willReturn($this->createQueryBuilderMock([]))
-        ;
+        $this->cleanReceiverData();
 
         $this->commandTester->execute([]);
 
@@ -57,146 +49,90 @@ class ProfitShareRetryCommandTest extends AbstractCommandTestCase
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
-    /**
-     * @param ProfitShareReceiver[] $receivers
-     */
-    private function createQueryBuilderMock(array $receivers): QueryBuilder
+    private function createMerchant(?string $mchId = null): Merchant
     {
-        /** @phpstan-var MockObject&QueryBuilder $qb */
-        $qb = $this->createMock(QueryBuilder::class);
-        $qb->method('innerJoin')->willReturnSelf();
-        $qb->method('where')->willReturnSelf();
-        $qb->method('andWhere')->willReturnSelf();
-        $qb->method('setParameter')->willReturnSelf();
+        // 直接从数据库查询 fixtures 中的商户，避免唯一约束冲突
+        $merchantRepository = self::getEntityManager()->getRepository(Merchant::class);
 
-        /** @phpstan-var MockObject&Query $query */
-        $query = $this->createMock(Query::class);
-        $query->method('getResult')->willReturn($receivers);
-        $qb->method('getQuery')->willReturn($query);
+        if (null === $mchId || '1234567890' === $mchId) {
+            $merchant = $merchantRepository->findOneBy(['mchId' => '1234567890']);
+            if (null !== $merchant) {
+                return $merchant;
+            }
+        }
 
-        return $qb;
-    }
+        if ('1111111111' === $mchId) {
+            $merchant = $merchantRepository->findOneBy(['mchId' => '1111111111']);
+            if (null !== $merchant) {
+                return $merchant;
+            }
+        }
 
-    public function testExecuteWithDryRun(): void
-    {
-        /** @phpstan-var MockObject&ProfitShareReceiver $receiver */
-        $receiver = $this->createMockReceiver();
-        /** @phpstan-var MockObject&ProfitShareOrder $order */
-        $order = $this->createMockOrder();
-        /** @phpstan-var MockObject&Merchant $merchant */
-        $merchant = $this->createMockMerchant();
+        if ('2222222222' === $mchId) {
+            $merchant = $merchantRepository->findOneBy(['mchId' => '2222222222']);
+            if (null !== $merchant) {
+                return $merchant;
+            }
+        }
 
-        $this->setupReceiverRepository([$receiver]);
+        // 如果指定了其他mchId或找不到现有商户，生成一个新的唯一商户
+        $newMchId = $mchId ?? '5555555555'; // 使用指定的ID或默认不冲突的ID
 
-        $receiver->method('getOrder')->willReturn($order);
-        $receiver->method('getRetryCount')->willReturn(0);
-        $receiver->method('getNextRetryAt')->willReturn(null);
-        // $receiver->method('getUpdatedAt')->willReturn(new \DateTimeImmutable('-1 hour'));
+        $merchant = new Merchant();
+        $merchant->setMchId($newMchId);
+        $merchant->setApiKey('test_api_key_' . $newMchId);
+        $merchant->setApiKeyV3('test_api_key_v3_' . $newMchId);
+        $merchant->setPemKey('test_pem_key_' . $newMchId);
+        $merchant->setValid(true);
 
-        $order->method('getMerchant')->willReturn($merchant);
-        $order->method('getSubMchId')->willReturn('1234567890');
-        $order->method('getOutOrderNo')->willReturn('ORDER123');
-        $order->method('getTransactionId')->willReturn('TX1234567890');
-
-        $this->profitShareService->expects($this->never())
-            ->method('queryProfitShareOrder')
-        ;
-
-        $this->commandTester->execute(['--dry-run' => true]);
-
-        $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('模拟执行模式', $output);
-        $this->assertStringContainsString('重试成功数', $output);
-        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-    }
-
-    private function createMockReceiver(): ProfitShareReceiver
-    {
-        /** @phpstan-var MockObject&ProfitShareReceiver $receiver */
-        $receiver = $this->createMock(ProfitShareReceiver::class);
-
-        return $receiver;
-    }
-
-    private function createMockOrder(): ProfitShareOrder
-    {
-        /** @phpstan-var MockObject&ProfitShareOrder $order */
-        $order = $this->createMock(ProfitShareOrder::class);
-
-        return $order;
-    }
-
-    private function createMockMerchant(): Merchant
-    {
-        /** @phpstan-var MockObject&Merchant $merchant */
-        $merchant = $this->createMock(Merchant::class);
+        $this->persistAndFlush($merchant);
 
         return $merchant;
     }
 
-    /**
-     * @param ProfitShareReceiver[] $receivers
-     */
-    private function setupReceiverRepository(array $receivers): void
+    private function createOrder(?Merchant $merchant = null): ProfitShareOrder
     {
-        $this->receiverRepository->method('createQueryBuilder')->willReturn($this->createQueryBuilderMock($receivers));
+        $order = new ProfitShareOrder();
+        $order->setSubMchId('1234567890');
+        $order->setTransactionId('TX1234567890');
+        // 使用唯一的订单号避免唯一约束冲突
+        $order->setOutOrderNo('ORDER_' . uniqid());
+        $order->setState(ProfitShareOrderState::PROCESSING);
+        if (null !== $merchant) {
+            $order->setMerchant($merchant);
+        }
+
+        $this->persistAndFlush($order);
+
+        return $order;
     }
 
-    public function testExecuteWithMaxRetryReached(): void
+    private function createReceiver(ProfitShareOrder $order, int $retryCount = 0): ProfitShareReceiver
     {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
-    }
+        $receiver = new ProfitShareReceiver();
+        $receiver->setOrder($order);
+        $receiver->setSequence(1);
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account');
+        $receiver->setAmount(100);
+        $receiver->setDescription('测试分账接收方');
+        $receiver->setResult(ProfitShareReceiverResult::FAILED);
+        $receiver->setRetryCount($retryCount);
+        // 设置下次重试时间为过去时间，确保可以重试
+        $receiver->setNextRetryAt(new \DateTimeImmutable('-1 hour'));
 
-    public function testExecuteWithSuccessfulRetry(): void
-    {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
-    }
+        $this->persistAndFlush($receiver);
 
-    public function testExecuteWithFailedRetry(): void
-    {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
-    }
-
-    public function testExecuteWithMissingOrder(): void
-    {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
-    }
-
-    public function testExecuteWithMissingMerchant(): void
-    {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
-    }
-
-    public function testExecuteWithServiceException(): void
-    {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
+        return $receiver;
     }
 
     public function testOptionDryRun(): void
     {
-        /** @phpstan-var MockObject&ProfitShareReceiver $receiver */
-        $receiver = $this->createMockReceiver();
-        /** @phpstan-var MockObject&ProfitShareOrder $order */
-        $order = $this->createMockOrder();
-        /** @phpstan-var MockObject&Merchant $merchant */
-        $merchant = $this->createMockMerchant();
+        $this->cleanReceiverData();
 
-        $this->setupReceiverRepository([$receiver]);
-
-        $receiver->method('getOrder')->willReturn($order);
-        $receiver->method('getRetryCount')->willReturn(0);
-        $receiver->method('getNextRetryAt')->willReturn(null);
-        $receiver->method('getAccount')->willReturn('test_account');
-        $receiver->method('getAmount')->willReturn(100);
-
-        $order->method('getMerchant')->willReturn($merchant);
-        $order->method('getSubMchId')->willReturn('1234567890');
-        $order->method('getOutOrderNo')->willReturn('ORDER123');
-        $order->method('getTransactionId')->willReturn('TX1234567890');
-
-        $this->profitShareService->expects($this->never())
-            ->method('queryProfitShareOrder')
-        ;
+        $merchant = $this->createMerchant();
+        $order = $this->createOrder($merchant);
+        $receiver = $this->createReceiver($order);
 
         $this->commandTester->execute(['--dry-run' => true]);
 
@@ -208,23 +144,129 @@ class ProfitShareRetryCommandTest extends AbstractCommandTestCase
 
     public function testOptionMaxRetry(): void
     {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
+        $this->cleanReceiverData();
+
+        $merchant = $this->createMerchant();
+        $order = $this->createOrder($merchant);
+        // 创建已达到最大重试次数的接收方
+        $receiver = $this->createReceiver($order, 5);
+
+        $this->commandTester->execute(['--max-retry' => 3]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('跳过处理数', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+    }
+
+    public function testExecuteWithMissingOrder(): void
+    {
+        $this->cleanReceiverData();
+
+        $merchant = $this->createMerchant();
+        $order = $this->createOrder($merchant);
+        $receiver = $this->createReceiver($order);
+
+        // 手动删除订单，模拟数据不一致的情况
+        self::getEntityManager()->remove($order);
+        self::getEntityManager()->flush();
+
+        $this->commandTester->execute(['--dry-run' => true]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('模拟执行模式', $output);
+        $this->assertStringContainsString('没有需要重试的分账接收方', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+    }
+
+    public function testExecuteWithMissingMerchant(): void
+    {
+        $this->cleanReceiverData();
+
+        $order = $this->createOrder(); // 没有设置merchant
+        $receiver = $this->createReceiver($order);
+
+        $this->commandTester->execute(['--dry-run' => true]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('模拟执行模式', $output);
+        $this->assertStringContainsString('没有需要重试的分账接收方', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testOptionMerchantId(): void
     {
-        $this->setupReceiverRepository([]);
+        $this->cleanReceiverData();
 
-        $this->commandTester->execute(['--merchant-id' => '123']);
+        // 创建两个不同的商户
+        $merchant1 = $this->createMerchant('1111111111');
+        $merchant2 = $this->createMerchant('2222222222');
+
+        // 为merchant1创建接收方
+        $order1 = $this->createOrder($merchant1);
+        $receiver1 = $this->createReceiver($order1);
+
+        // 为merchant2创建接收方
+        $order2 = $this->createOrder($merchant2);
+        $receiver2 = $this->createReceiver($order2);
+
+        // 只处理merchant1的接收方
+        $this->commandTester->execute(['--merchant-id' => '1111111111', '--dry-run' => true]);
 
         $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('没有需要重试的分账接收方', $output);
+        $this->assertStringContainsString('模拟执行模式', $output);
         $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testOptionRetryInterval(): void
     {
-        self::markTestSkipped('跳过此测试，因为Mock对象无法通过Doctrine的persist/flush');
+        $this->cleanReceiverData();
+
+        $merchant = $this->createMerchant();
+        $order = $this->createOrder($merchant);
+        // 创建一个接收方，设置下次重试时间为未来，不应该被重试
+        $receiver = new ProfitShareReceiver();
+        $receiver->setOrder($order);
+        $receiver->setSequence(1);
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('test_account');
+        $receiver->setAmount(100);
+        $receiver->setDescription('测试分账接收方');
+        $receiver->setResult(ProfitShareReceiverResult::FAILED);
+        $receiver->setRetryCount(1);
+        // 设置下次重试时间为未来，确保不会被重试
+        $receiver->setNextRetryAt(new \DateTimeImmutable('+50 minutes'));
+
+        $this->persistAndFlush($receiver);
+
+        $this->commandTester->execute(['--retry-interval' => 60]); // 60分钟间隔
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('跳过处理数', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+    }
+
+    public function testExecuteWithMultipleReceivers(): void
+    {
+        $this->cleanReceiverData();
+
+        $merchant = $this->createMerchant();
+        $order = $this->createOrder($merchant);
+
+        // 创建多个接收方
+        $receiver1 = $this->createReceiver($order);
+        $receiver1->setAccount('account1');
+        $this->persistAndFlush($receiver1);
+
+        $receiver2 = $this->createReceiver($order);
+        $receiver2->setAccount('account2');
+        $this->persistAndFlush($receiver2);
+
+        $this->commandTester->execute(['--dry-run' => true]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('模拟执行模式', $output);
+        $this->assertStringContainsString('总接收方数', $output);
+        $this->assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     protected function getCommandTester(): CommandTester
@@ -234,46 +276,13 @@ class ProfitShareRetryCommandTest extends AbstractCommandTestCase
 
     protected function onSetUp(): void
     {
-        $this->receiverRepository = $this->createMock(ProfitShareReceiverRepository::class);
-        $this->profitShareService = $this->createMock(ProfitShareService::class);
-        // Mock EntityManager 以避免与 Mock 对象的冲突
-        $entityManager = self::getEntityManager();
-        $this->logger = $this->createMock(LoggerInterface::class);
-
-        // 清理服务定位器缓存，防止服务重复初始化
-        self::clearServiceLocatorCache();
-
-        // 设置Mock服务到容器
-        $container = self::getContainer();
-
-        // 检查服务是否已经初始化，避免重复设置
-        if (!$container->initialized(ProfitShareReceiverRepository::class)) {
-            $container->set(ProfitShareReceiverRepository::class, $this->receiverRepository);
-        }
-        if (!$container->initialized(ProfitShareService::class)) {
-            $container->set(ProfitShareService::class, $this->profitShareService);
-        }
-        // 对于 EntityManager 和 Logger，使用 try-catch 处理，因为它们可能已经被其他测试初始化
-        try {
-            $container->set('doctrine.orm.default_entity_manager', $entityManager);
-        } catch (InvalidArgumentException $e) {
-            // 使用现有的EntityManager - 不需要额外操作
-        }
-        try {
-            $container->set('logger', $this->logger);
-        } catch (InvalidArgumentException $e) {
-            // 使用现有的logger
-            /** @var LoggerInterface $logger */
-            $logger = $container->get('logger');
-            /** @phpstan-var MockObject&LoggerInterface $logger */
-            $this->logger = $logger;
-        }
+        $this->receiverRepository = self::getService(ProfitShareReceiverRepository::class);
 
         /** @var ProfitShareRetryCommand $command */
         $command = self::getService(ProfitShareRetryCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
         $this->commandTester = new CommandTester($command);
     }
 }

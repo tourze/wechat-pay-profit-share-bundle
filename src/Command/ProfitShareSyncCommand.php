@@ -22,7 +22,7 @@ use Tourze\WechatPayProfitShareBundle\Service\ProfitShareService;
     description: '同步微信支付分账订单状态'
 )]
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareSyncCommand extends Command
+final class ProfitShareSyncCommand extends Command
 {
     public function __construct(
         private readonly ProfitShareOrderRepository $orderRepository,

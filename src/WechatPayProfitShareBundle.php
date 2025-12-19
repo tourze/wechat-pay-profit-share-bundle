@@ -12,7 +12,7 @@ use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
 use Tourze\DoctrineUserBundle\DoctrineUserBundle;
 use WechatPayBundle\WechatPayBundle;
 
-class WechatPayProfitShareBundle extends Bundle implements BundleDependencyInterface
+final class WechatPayProfitShareBundle extends Bundle implements BundleDependencyInterface
 {
     public static function getBundleDependencies(): array
     {

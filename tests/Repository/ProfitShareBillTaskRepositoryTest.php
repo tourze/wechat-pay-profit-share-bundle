@@ -15,7 +15,7 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareBillTaskRepository;
  */
 #[CoversClass(ProfitShareBillTaskRepository::class)]
 #[RunTestsInSeparateProcesses]
-class ProfitShareBillTaskRepositoryTest extends AbstractRepositoryTestCase
+final class ProfitShareBillTaskRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {

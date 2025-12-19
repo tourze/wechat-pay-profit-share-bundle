@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareUnfreezeRequest;
  * @internal
  */
 #[CoversClass(ProfitShareUnfreezeRequest::class)]
-class ProfitShareUnfreezeRequestTest extends TestCase
+final class ProfitShareUnfreezeRequestTest extends TestCase
 {
     public function testCreateRequestWithDefaultValues(): void
     {

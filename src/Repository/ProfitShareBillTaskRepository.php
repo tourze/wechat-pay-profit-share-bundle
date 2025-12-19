@@ -13,7 +13,7 @@ use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareBillTask;
  * @extends ServiceEntityRepository<ProfitShareBillTask>
  */
 #[AsRepository(entityClass: ProfitShareBillTask::class)]
-class ProfitShareBillTaskRepository extends ServiceEntityRepository
+final class ProfitShareBillTaskRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

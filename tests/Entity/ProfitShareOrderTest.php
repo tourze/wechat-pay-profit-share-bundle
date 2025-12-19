@@ -19,7 +19,7 @@ use WechatPayBundle\Entity\Merchant;
  * @internal
  */
 #[CoversClass(ProfitShareOrder::class)]
-class ProfitShareOrderTest extends AbstractEntityTestCase
+final class ProfitShareOrderTest extends AbstractEntityTestCase
 {
     private ProfitShareOrder $profitShareOrder;
 
@@ -62,7 +62,12 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testMerchantGetterSetter(): void
     {
-        $merchant = $this->createMock(Merchant::class);
+        // 使用真实的Merchant实体替代Mock
+        $merchant = new Merchant();
+        $merchant->setMchId('1900000001');
+        $merchant->setPemKey('fake-key');
+        $merchant->setPemCert('fake-cert');
+        $merchant->setCertSerial('ABC');
 
         $this->assertNull($this->profitShareOrder->getMerchant());
 
@@ -264,21 +269,31 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
         $this->assertInstanceOf(ArrayCollection::class, $receivers);
         $this->assertEmpty($receivers);
 
-        // 创建Mock Receiver
-        $receiver1 = $this->createMock(ProfitShareReceiver::class);
-        $receiver1->method('getOrder')->willReturn($this->profitShareOrder);
+        // 使用真实的Receiver实体替代Mock
+        $receiver1 = new ProfitShareReceiver();
+        $receiver1->setSequence(0);
+        $receiver1->setType('MERCHANT_ID');
+        $receiver1->setAccount('1900000109');
+        $receiver1->setAmount(500);
+        $receiver1->setDescription('测试接收方1');
 
-        $receiver2 = $this->createMock(ProfitShareReceiver::class);
-        $receiver2->method('getOrder')->willReturn($this->profitShareOrder);
+        $receiver2 = new ProfitShareReceiver();
+        $receiver2->setSequence(1);
+        $receiver2->setType('PERSONAL_OPENID');
+        $receiver2->setAccount('ouser1234567890');
+        $receiver2->setAmount(300);
+        $receiver2->setDescription('测试接收方2');
 
         // 测试添加接收方
         $this->profitShareOrder->addReceiver($receiver1);
         $this->assertCount(1, $receivers);
         $this->assertTrue($receivers->contains($receiver1));
+        $this->assertSame($this->profitShareOrder, $receiver1->getOrder());
 
         $this->profitShareOrder->addReceiver($receiver2);
         $this->assertCount(2, $receivers);
         $this->assertTrue($receivers->contains($receiver2));
+        $this->assertSame($this->profitShareOrder, $receiver2->getOrder());
 
         // 测试重复添加不会增加数量
         $this->profitShareOrder->addReceiver($receiver1);
@@ -297,15 +312,23 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testReceiversBidirectionalRelationship(): void
     {
-        $receiver = $this->createMock(ProfitShareReceiver::class);
+        // 使用真实的Receiver实体测试双向关联
+        $receiver = new ProfitShareReceiver();
+        $receiver->setSequence(0);
+        $receiver->setType('MERCHANT_ID');
+        $receiver->setAccount('1900000109');
+        $receiver->setAmount(500);
+        $receiver->setDescription('测试接收方');
 
-        // Mock receiver的方法调用
-        $receiver->expects($this->once())
-            ->method('setOrder')
-            ->with($this->profitShareOrder)
-        ;
+        // 初始状态：receiver没有关联order
+        $this->assertNull($receiver->getOrder());
 
+        // 添加receiver到order，应该自动设置双向关联
         $this->profitShareOrder->addReceiver($receiver);
+
+        // 验证双向关联已建立
+        $this->assertSame($this->profitShareOrder, $receiver->getOrder());
+        $this->assertTrue($this->profitShareOrder->getReceivers()->contains($receiver));
     }
 
     public function testTimestampGetters(): void
@@ -324,7 +347,7 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
         $this->assertEmpty((string) $this->profitShareOrder);
 
         $this->profitShareOrder->setOutOrderNo('ORDER123456789');
-        $this->assertEquals('ORDER123456789', (string) $this->profitShareOrder);
+        $this->assertSame('ORDER123456789', $this->profitShareOrder->__toString());
     }
 
     public function testStringableImplementation(): void
@@ -335,8 +358,12 @@ class ProfitShareOrderTest extends AbstractEntityTestCase
 
     public function testComplexOrderWorkflow(): void
     {
-        // 模拟一个完整的分账订单工作流程
-        $merchant = $this->createMock(Merchant::class);
+        // 模拟一个完整的分账订单工作流程，使用真实Merchant实体
+        $merchant = new Merchant();
+        $merchant->setMchId('1900000001');
+        $merchant->setPemKey('fake-key');
+        $merchant->setPemCert('fake-cert');
+        $merchant->setCertSerial('ABC');
 
         // 1. 初始化订单
         $this->profitShareOrder->setMerchant($merchant);

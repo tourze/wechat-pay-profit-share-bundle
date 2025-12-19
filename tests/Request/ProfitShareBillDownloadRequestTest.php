@@ -12,7 +12,7 @@ use Tourze\WechatPayProfitShareBundle\Request\ProfitShareBillDownloadRequest;
  * @internal
  */
 #[CoversClass(ProfitShareBillDownloadRequest::class)]
-class ProfitShareBillDownloadRequestTest extends TestCase
+final class ProfitShareBillDownloadRequestTest extends TestCase
 {
     public function testCreateRequestWithDefaultValues(): void
     {

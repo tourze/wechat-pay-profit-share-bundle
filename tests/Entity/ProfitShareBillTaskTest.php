@@ -16,7 +16,7 @@ use WechatPayBundle\Entity\Merchant;
  * @internal
  */
 #[CoversClass(ProfitShareBillTask::class)]
-class ProfitShareBillTaskTest extends AbstractEntityTestCase
+final class ProfitShareBillTaskTest extends AbstractEntityTestCase
 {
     private ProfitShareBillTask $profitShareBillTask;
 

@@ -16,7 +16,7 @@ use Yiisoft\Json\Json;
  * 负责处理微信分账相关的HTTP请求、响应处理和日志记录
  */
 #[WithMonologChannel(channel: 'wechat_pay_profit_share')]
-class ProfitShareApiExecutor
+final class ProfitShareApiExecutor
 {
     use WechatPayProfitShareHelperTrait;
 

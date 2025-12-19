@@ -7,6 +7,7 @@ namespace Tourze\WechatPayProfitShareBundle\Tests\Repository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
+use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver;
 use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReceiverRepository;
 
@@ -15,12 +16,12 @@ use Tourze\WechatPayProfitShareBundle\Repository\ProfitShareReceiverRepository;
  */
 #[CoversClass(ProfitShareReceiverRepository::class)]
 #[RunTestsInSeparateProcesses]
-class ProfitShareReceiverRepositoryTest extends AbstractRepositoryTestCase
+final class ProfitShareReceiverRepositoryTest extends AbstractRepositoryTestCase
 {
     protected function createNewEntity(): object
     {
         // 创建关联的 ProfitShareOrder
-        $order = new \Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder();
+        $order = new ProfitShareOrder();
         $order->setSubMchId('test_sub_mch_' . bin2hex(random_bytes(4)));
         $order->setTransactionId('test_transaction_' . bin2hex(random_bytes(8)));
         $order->setOutOrderNo('test_out_order_' . bin2hex(random_bytes(8)));

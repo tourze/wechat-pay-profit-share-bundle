@@ -6,7 +6,7 @@ namespace Tourze\WechatPayProfitShareBundle\Request;
 
 use DateTimeInterface;
 
-class ProfitShareBillRequest
+final class ProfitShareBillRequest
 {
     public function __construct(
         private readonly \DateTimeInterface $billDate,

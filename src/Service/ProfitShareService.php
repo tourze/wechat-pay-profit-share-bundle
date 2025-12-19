@@ -17,7 +17,7 @@ use Yiisoft\Json\Json;
  * 分账服务 - 重构后的简化版本
  * 负责分账业务的核心编排
  */
-class ProfitShareService
+final class ProfitShareService
 {
     use WechatPayProfitShareHelperTrait;
 

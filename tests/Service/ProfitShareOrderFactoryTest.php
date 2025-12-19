@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Tourze\WechatPayProfitShareBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareOrder;
 use Tourze\WechatPayProfitShareBundle\Entity\ProfitShareReceiver;
 use Tourze\WechatPayProfitShareBundle\Request\ProfitShareOrderRequest;
@@ -16,35 +17,41 @@ use WechatPayBundle\Entity\Merchant;
 /**
  * @internal
  */
+#[RunTestsInSeparateProcesses]
 #[CoversClass(ProfitShareOrderFactory::class)]
-class ProfitShareOrderFactoryTest extends TestCase
+final class ProfitShareOrderFactoryTest extends AbstractIntegrationTestCase
 {
     private ProfitShareOrderFactory $factory;
 
     protected function onSetUp(): void
     {
-        $this->factory = new ProfitShareOrderFactory();
+        $this->factory = self::getService(ProfitShareOrderFactory::class);
     }
 
     public function testBuildOrderEntity(): void
     {
-        $merchant = $this->createMock(Merchant::class);
-        $receiverRequest = $this->createMock(ProfitShareReceiverRequest::class);
-        $orderRequest = $this->createMock(ProfitShareOrderRequest::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+        $merchant->setCertSerial('test_cert_serial');
+        $merchant->setPemKey('test_pem_key');
+        $merchant->setPublicKey('test_public_key');
+        $merchant->setPublicKeyId('test_public_key_id');
 
-        $receiverRequest->method('getType')->willReturn('MERCHANT_ID');
-        $receiverRequest->method('getAccount')->willReturn('test_account');
-        $receiverRequest->method('getAmount')->willReturn(100);
-        $receiverRequest->method('getDescription')->willReturn('Test receiver');
-        $receiverRequest->method('getName')->willReturn('Test Name');
-
-        $orderRequest->method('getSubMchId')->willReturn('test_sub_mch_id');
-        $orderRequest->method('getAppId')->willReturn('test_app_id');
-        $orderRequest->method('getSubAppId')->willReturn('test_sub_app_id');
-        $orderRequest->method('getTransactionId')->willReturn('test_transaction_id');
-        $orderRequest->method('getOutOrderNo')->willReturn('test_out_order_no');
-        $orderRequest->method('isUnfreezeUnsplit')->willReturn(true);
-        $orderRequest->method('getReceivers')->willReturn([$receiverRequest]);
+        $orderRequest = new ProfitShareOrderRequest(
+            subMchId: 'test_sub_mch_id',
+            transactionId: 'test_transaction_id',
+            outOrderNo: 'test_out_order_no',
+        );
+        $orderRequest->setAppId('test_app_id');
+        $orderRequest->setSubAppId('test_sub_app_id');
+        $orderRequest->setUnfreezeUnsplit(true);
+        $orderRequest->addReceiver(new ProfitShareReceiverRequest(
+            type: 'MERCHANT_ID',
+            account: 'test_account',
+            amount: 100,
+            description: 'Test receiver',
+            name: 'Test Name'
+        ));
 
         $order = $this->factory->buildOrderEntity($merchant, $orderRequest);
 
@@ -72,30 +79,35 @@ class ProfitShareOrderFactoryTest extends TestCase
 
     public function testBuildOrderEntityWithMultipleReceivers(): void
     {
-        $merchant = $this->createMock(Merchant::class);
-        $receiverRequest1 = $this->createMock(ProfitShareReceiverRequest::class);
-        $receiverRequest2 = $this->createMock(ProfitShareReceiverRequest::class);
-        $orderRequest = $this->createMock(ProfitShareOrderRequest::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+        $merchant->setCertSerial('test_cert_serial');
+        $merchant->setPemKey('test_pem_key');
+        $merchant->setPublicKey('test_public_key');
+        $merchant->setPublicKeyId('test_public_key_id');
 
-        $receiverRequest1->method('getType')->willReturn('MERCHANT_ID');
-        $receiverRequest1->method('getAccount')->willReturn('account1');
-        $receiverRequest1->method('getAmount')->willReturn(100);
-        $receiverRequest1->method('getDescription')->willReturn('Receiver 1');
-        $receiverRequest1->method('getName')->willReturn('Name 1');
-
-        $receiverRequest2->method('getType')->willReturn('PERSONAL_OPENID');
-        $receiverRequest2->method('getAccount')->willReturn('openid2');
-        $receiverRequest2->method('getAmount')->willReturn(200);
-        $receiverRequest2->method('getDescription')->willReturn('Receiver 2');
-        $receiverRequest2->method('getName')->willReturn('Name 2');
-
-        $orderRequest->method('getSubMchId')->willReturn('test_sub_mch_id');
-        $orderRequest->method('getAppId')->willReturn('test_app_id');
-        $orderRequest->method('getSubAppId')->willReturn(null);
-        $orderRequest->method('getTransactionId')->willReturn('test_transaction_id');
-        $orderRequest->method('getOutOrderNo')->willReturn('test_out_order_no');
-        $orderRequest->method('isUnfreezeUnsplit')->willReturn(false);
-        $orderRequest->method('getReceivers')->willReturn([$receiverRequest1, $receiverRequest2]);
+        $orderRequest = new ProfitShareOrderRequest(
+            subMchId: 'test_sub_mch_id',
+            transactionId: 'test_transaction_id',
+            outOrderNo: 'test_out_order_no',
+        );
+        $orderRequest->setAppId('test_app_id');
+        $orderRequest->setSubAppId(null);
+        $orderRequest->setUnfreezeUnsplit(false);
+        $orderRequest->addReceiver(new ProfitShareReceiverRequest(
+            type: 'MERCHANT_ID',
+            account: 'account1',
+            amount: 100,
+            description: 'Receiver 1',
+            name: 'Name 1'
+        ));
+        $orderRequest->addReceiver(new ProfitShareReceiverRequest(
+            type: 'PERSONAL_OPENID',
+            account: 'openid2',
+            amount: 200,
+            description: 'Receiver 2',
+            name: 'Name 2'
+        ));
 
         $order = $this->factory->buildOrderEntity($merchant, $orderRequest);
 
@@ -115,16 +127,21 @@ class ProfitShareOrderFactoryTest extends TestCase
 
     public function testBuildOrderEntityWithNullOptionalFields(): void
     {
-        $merchant = $this->createMock(Merchant::class);
-        $orderRequest = $this->createMock(ProfitShareOrderRequest::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+        $merchant->setCertSerial('test_cert_serial');
+        $merchant->setPemKey('test_pem_key');
+        $merchant->setPublicKey('test_public_key');
+        $merchant->setPublicKeyId('test_public_key_id');
 
-        $orderRequest->method('getSubMchId')->willReturn('test_sub_mch_id');
-        $orderRequest->method('getAppId')->willReturn('test_app_id');
-        $orderRequest->method('getSubAppId')->willReturn(null);
-        $orderRequest->method('getTransactionId')->willReturn('test_transaction_id');
-        $orderRequest->method('getOutOrderNo')->willReturn('test_out_order_no');
-        $orderRequest->method('isUnfreezeUnsplit')->willReturn(false);
-        $orderRequest->method('getReceivers')->willReturn([]);
+        $orderRequest = new ProfitShareOrderRequest(
+            subMchId: 'test_sub_mch_id',
+            transactionId: 'test_transaction_id',
+            outOrderNo: 'test_out_order_no',
+        );
+        $orderRequest->setAppId('test_app_id');
+        $orderRequest->setSubAppId(null);
+        $orderRequest->setUnfreezeUnsplit(false);
 
         $order = $this->factory->buildOrderEntity($merchant, $orderRequest);
 
@@ -135,7 +152,13 @@ class ProfitShareOrderFactoryTest extends TestCase
 
     public function testBuildOrderFromResponse(): void
     {
-        $merchant = $this->createMock(Merchant::class);
+        $merchant = new Merchant();
+        $merchant->setMchId('test_mch_id');
+        $merchant->setCertSerial('test_cert_serial');
+        $merchant->setPemKey('test_pem_key');
+        $merchant->setPublicKey('test_public_key');
+        $merchant->setPublicKeyId('test_public_key_id');
+
         $responseData = [
             'sub_mchid' => 'test_sub_mch_id',
             'transaction_id' => 'test_transaction_id',
@@ -155,5 +178,11 @@ class ProfitShareOrderFactoryTest extends TestCase
         $this->assertSame('test_app_id', $order->getAppId());
         $this->assertSame('test_sub_app_id', $order->getSubAppId());
         $this->assertSame('test_order_id', $order->getOrderId());
+    }
+
+    public function testServiceIsRegisteredInContainer(): void
+    {
+        $factory = self::getService(ProfitShareOrderFactory::class);
+        $this->assertInstanceOf(ProfitShareOrderFactory::class, $factory);
     }
 }

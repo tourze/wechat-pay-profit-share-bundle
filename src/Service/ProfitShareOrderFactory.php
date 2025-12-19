@@ -14,7 +14,7 @@ use WechatPayBundle\Entity\Merchant;
  * 分账订单工厂
  * 负责创建分账订单和接收方实体
  */
-class ProfitShareOrderFactory
+final class ProfitShareOrderFactory
 {
     /**
      * 构建分账订单实体
